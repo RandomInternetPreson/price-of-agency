@@ -18,7 +18,7 @@ from it.
 |---|---|
 | The designed edition, for a screen | [`design/book.pdf`](design/book.pdf) |
 | The designed edition, for two-sided printing | [`design/book_print.pdf`](design/book_print.pdf) |
-| The web edition, one file, works offline | [`web/the_price_of_agency.html`](web/the_price_of_agency.html) |
+| The web edition, one file, works offline | [`web/the_price_of_agency.html`](https://randominternetpreson.github.io/price-of-agency/) |
 | The manuscript, plain text | [`docs/THE_PRICE_OF_AGENCY_unified_v0.50.md`](docs/THE_PRICE_OF_AGENCY_unified_v0.50.md) |
 
 The book has two kinds of page. Sections 1 and 2 of every chapter are for every reader: an idea in plain words, then a
@@ -28,7 +28,7 @@ and open where they stand. A reader can go from the first page to the last on th
 
 ## Use it
 
-[`web/calculator.html`](web/calculator.html), *Who holds the eraser?*, is a ruler for one schedule: yours. It asks nine
+[`web/calculator.html`](https://randominternetpreson.github.io/price-of-agency/calculator.html), *Who holds the eraser?*, is a ruler for one schedule: yours. It asks nine
 questions: how far ahead you know your hours, how often they are changed by a decision that is not freely yours, what one
 mistake costs you, how much a shift leaves you for anything else. It answers in two parts. The first uses only your
 answers: how often the schedule lets you be where you planned to be (a family dinner as much as a class), how many plans
