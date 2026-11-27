@@ -1,0 +1,58 @@
+C2  Proposition 13.1 counterexample, verified by enumeration
+    A: independence 0.8113  aim 0.0000  I(.;F|E)/H(F) 0.8113  P(match F) 0.500
+    B: independence 0.8960  aim 0.4564  I(.;F|E)/H(F) 0.3525  P(match F) 0.125
+    Reading: the reviewer's numbers reproduce (0.811/0 -> 0.896/0.456). Unconditional aim rose because the
+    processor used E, which carries future information on its own; A xor E recovers F. The CONDITIONAL
+    aim I(.;F|E) -- the lower wall of Theorem 9' -- FELL (0.811 -> 0.353): data processing holds given E.
+    So P13.1 as printed is false for processors that may use E; the immune statistic is the conditional one.
+C5  seventy-fold: elasticities vs per-unit returns (overt agent, e=0.7, s=0.5)
+  delta_A(O0={E})        = 0.9999   (plateau; 1.0 up to m-discretization)
+  delta_A(O1={E,R})      = 0.2909   (full surveillance of randomizer)
+  sage ceiling H(F|E)/log = 0.7533
+  partial surveillance rho: delta_A(rho) = rho*0.2909 + (1-rho)*0.9999  [exact, linear]
+  interpretation: surveilled stealth keeps only the F-uncertainty routed through lambda=0.286-weighted action map
+    beta=   6: competence 0.3729  elasticity 0.565  dQ/dbeta 0.03512
+    beta=  20: competence 0.4610  elasticity 0.008  dQ/dbeta 0.00018
+    ratio of elasticities 70.8;  ratio of per-unit returns dQ/dbeta 191.1
+    Reading: the reviewer is right that the two ratios differ; the per-unit ratio is what 'an hour returned'
+    means, and it is the number to print.
+G3  tiering vs pooling on the book's time->competence curve (concave above the gate)
+    beta0=   6 total cut=   4:  pool loss 0.1462   tier loss 0.2135   tier-paid loss 0.0969   -> POOL wins unpaid; tier wins paid
+    beta0=   6 total cut=  10:  pool loss 0.3886   tier loss 0.7105   tier-paid loss 0.1521   -> POOL wins unpaid; tier wins paid
+    beta0=   6 total cut=  20:  pool loss 0.8627   tier loss 0.6670   tier-paid loss 0.1732   -> tier wins unpaid; tier wins paid
+    beta0=   8 total cut=   4:  pool loss 0.0659   tier loss 0.0969   tier-paid loss 0.0435   -> POOL wins unpaid; tier wins paid
+    beta0=   8 total cut=  10:  pool loss 0.1752   tier loss 0.4856   tier-paid loss 0.0685   -> POOL wins unpaid; tier wins paid
+    beta0=   8 total cut=  20:  pool loss 0.3891   tier loss 0.8002   tier-paid loss 0.0784   -> POOL wins unpaid; tier wins paid
+    beta0=  12 total cut=   4:  pool loss 0.0134   tier loss 0.0196   tier-paid loss 0.0090   -> POOL wins unpaid; tier wins paid
+    beta0=  12 total cut=  10:  pool loss 0.0355   tier loss 0.1020   tier-paid loss 0.0144   -> POOL wins unpaid; tier wins paid
+    beta0=  12 total cut=  20:  pool loss 0.0788   tier loss 0.7406   tier-paid loss 0.0169   -> POOL wins unpaid; tier wins paid
+    beta0=  20 total cut=   4:  pool loss 0.0008   tier loss 0.0010   tier-paid loss 0.0005   -> POOL wins unpaid; tier wins paid
+    beta0=  20 total cut=  10:  pool loss 0.0020   tier loss 0.0049   tier-paid loss 0.0009   -> POOL wins unpaid; tier wins paid
+    beta0=  20 total cut=  20:  pool loss 0.0044   tier loss 0.0359   tier-paid loss 0.0011   -> POOL wins unpaid; tier wins paid
+    Reading: above the gate the curve is concave and pooling wins (Jensen), exactly as the reviewer says;
+    tiering wins when the pooled cut would drag the whole pool toward the gate, or when the tier is paid
+    enough to sit on the flat part of the curve beforehand. Rule 7 needs its boundary condition.
+G5  real-sea defection inequality with pooling fraction phi and a cost c of reading independently
+     k (boats on the hub ground)    phi=0  phi=0.5  phi=0.9  (independent payoff minus follower payoff, c=0)
+                               1   -0.100   -0.050   -0.010
+                               2    0.300    0.150    0.030
+                               3    0.433    0.217    0.043
+                               5    0.540    0.270    0.054
+                               9    0.611    0.306    0.061
+    With c > 0 the independent fisher defects iff (1-phi) V (0.7 - 0.8/k) > c, i.e. phi < 1 - c/(V(0.7-0.8/k)):
+      k=2 c=0.05: phi* = 0.83
+      k=2 c=0.2: phi* = 0.33
+      k=5 c=0.05: phi* = 0.91
+      k=5 c=0.2: phi* = 0.63
+      k=9 c=0.05: phi* = 0.92
+      k=9 c=0.2: phi* = 0.67
+    Reading: pooling a fraction of the catch does not change the ranking (phi cancels); only full pooling,
+    or a reading cost that the private residual no longer covers, re-herds the town. Crowding penalty is
+    needed; winner-take-all is not (k >= 2 suffices). 'Keep wildcards fed' is a transfer to a few, not pooling.
+C9  aggregate gate on a random channel (Theorem 5c thresholds spread across signals)
+    channel 0: activation goes 0 -> 1.00 over e; largest single step 0.088; steps > 0.05: 3; thresholds span [0.03, 1.00]
+    channel 1: activation goes 0 -> 1.00 over e; largest single step 0.078; steps > 0.05: 4; thresholds span [0.05, 0.98]
+    channel 2: activation goes 0 -> 1.00 over e; largest single step 0.090; steps > 0.05: 4; thresholds span [0.01, 0.99]
+    Reading: per decision the gate is a step; across a channel whose signals point with different confidence
+    the aggregate activation is a staircase of small steps -- smooth-looking if the thresholds spread. The
+    knife edge is a per-decision fact; the aggregate dead zone is a property of the symmetric class.

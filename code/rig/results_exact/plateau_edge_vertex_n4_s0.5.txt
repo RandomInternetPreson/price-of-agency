@@ -1,0 +1,6 @@
+restart     0  new best aim 0.291081   (0s)
+restart     2  new best aim 0.310536   (0s)
+
+n=4 s=0.5: best aim at delta_A=1 found = 0.310536  (restarts 64494, within 1e-6 of best in 14.5% of restarts; median 0.2911)
+support size (nonzeros): 24 of 64
+reference: c0' (hand plateau, closed form) = 0.2256; previously best asymmetric numerical = 0.277 at (6,0.5); crude upper bound 0.56

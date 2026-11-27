@@ -1,0 +1,22 @@
+% Coda: the ten links, each with the tag the Coda prints for it and where the book makes it. A drawing of the text.
+\begin{tikzpicture}[x=1cm,y=1cm,
+   nm/.style={font=\sffamily\fontsize{8.2}{10}\selectfont,anchor=west,inner sep=0pt,text=ink},
+   wh/.style={font=\sffamily\fontsize{7.2}{9}\selectfont,anchor=east,inner sep=0pt,text=muted},
+   tg/.style={font=\sffamily\fontsize{7.2}{9}\selectfont,anchor=west,inner sep=0pt,text=ink}]
+  \newcommand{\linkrow}[5]{% y, number, name, where, tag
+     \fill[white] (0.28,#1) circle (0.19); \draw[ink,line width=0.6pt] (0.28,#1) circle (0.19);
+     \node[font=\sffamily\fontsize{7}{8}\selectfont\bfseries,inner sep=0pt] at (0.28,#1) {#2};
+     \node[nm] at (0.68,#1) {\textbf{#3}}; \node[tg] at (4.8,#1) {#5}; \node[wh] at (11.15,#1) {#4};}
+  \draw[hair,line width=1.1pt] (0.28,-0.2) -- (0.28,-6.05);
+  \linkrow{-0.2}{1}{The staircase, and its ceiling}{Chapter 2}{\tagword{PROVEN}}
+  \linkrow{-0.85}{2}{The door is lawful}{Chapters 2, 3}{\tagword{PROVEN} that the door is open}
+  \linkrow{-1.5}{3}{Congruence, claimed carefully}{Chapter 2}{\tagword{FRAMING}, not a theorem}
+  \linkrow{-2.15}{4}{The promotion}{Chapter 3}{the hinge}
+  \fill[ink] (0.28,-2.15) circle (0.19); \node[font=\sffamily\fontsize{7}{8}\selectfont\bfseries,inner sep=0pt,text=white] at (0.28,-2.15) {4};
+  \linkrow{-2.8}{5}{The two rulers}{Chapter 4}{\tagword{EXACT} definitions; \tagword{PROVEN} fences}
+  \linkrow{-3.45}{6}{The anatomy}{Chapters 5 to 7}{\tagword{PROVEN}; \tagword{EXACT}; the plateau's edge \tagword{OPEN}}
+  \linkrow{-4.1}{7}{The watchers}{Chapters 8, 9}{\tagword{EXACT}}
+  \linkrow{-4.75}{8}{The towns}{Chapters 10, 11}{\tagword{EXACT}; under stress, \tagword{SIMULATION}}
+  \linkrow{-5.4}{9}{The ledger}{Chapters 13, 14}{\tagword{EXACT}; \tagword{NUMERICAL}; field audit begun}
+  \linkrow{-6.05}{10}{The monuments}{Chapter 14}{the observation, stated once}
+\end{tikzpicture}%

@@ -1,0 +1,6 @@
+n=5 s=0.5: best aim at delta_A=1 found = 0.357101  (restarts 40000, within 1e-6 of best in 3.5% of restarts; median 0.3046)   [container, 2026-11-10]
+support size (nonzeros): 35 of 125
+P(A|F) rows of the best vertex: four futures answered (1/2, 3/10, 1/5) over three actions, one answered (2/5, 2/5, 1/5):
+  H(A|F) = [4 H(1/2,3/10,1/5) + H(2/5,2/5,1/5)] / 5 = 1.492766 bits;  edge >= 1 - 1.492766/log2(5) = 0.357101
+Lower bounds by number of futures at s = 0.5:  n=3 0.369070 (exact, closed)   n=4 0.310536 (closed to 2e-4)   n=5 0.357101   n=6 0.334841
+n=7 s=0.5: best aim found = 0.359125 (36,653 restarts in 480 s; found once -- a floor, probably not the edge)   [container, 2026-11-10]

@@ -1,0 +1,22 @@
+% Chapter 4, the story: three tracks on one harbor in one wind. A drawing, not data.
+\begin{tikzpicture}[x=1cm,y=1cm,>={Stealth[length=4.6pt,width=4pt]},lab/.style={font=\sffamily\fontsize{7.8}{9.8}\selectfont,inner sep=1.5pt,align=left}]
+  \fill[water] (0,0.75) rectangle (11.2,5.6);
+  \fill[road] (0,0) rectangle (11.2,0.75);
+  \node[lab,text=muted,anchor=west] at (0.15,0.2) {the quay};
+  % wind
+  \foreach \x in {0.9,1.5,2.1}{\draw[->,muted,line width=0.7pt] (\x,5.35) -- (\x,4.55);}
+  \node[lab,text=muted,anchor=west] at (2.3,4.95) {wind};
+  % island and port
+  \fill[road] (9.4,2.75) ellipse (0.95 and 0.42); \node[lab,anchor=north] at (9.4,2.28) {the island};
+  \fill[ink] (5.75,5.05) circle (2.4pt); \node[lab,anchor=west] at (5.95,5.1) {the port he chose};
+  % ferry: one straight line, out and back
+  \draw[ink,line width=1.1pt] (1.7,0.75) -- (8.55,2.62);
+  \draw[->,ink,line width=1.1pt] (5.0,1.652) -- (5.35,1.748);
+  \node[lab,anchor=north west] at (5.9,1.72) {\textbf{The ferry captain.} One line,\\written on the timetable.};
+  % tourist: wandering on the quay
+  \draw[sorange,line width=1.1pt,rounded corners=2.2pt] (2.5,0.35) -- (2.9,0.55) -- (3.2,0.25) -- (2.95,0.15) -- (3.45,0.45) -- (3.8,0.6) -- (3.65,0.3) -- (4.05,0.2) -- (4.3,0.5) -- (4.0,0.62) -- (4.55,0.35);
+  \node[lab,anchor=west] at (4.75,0.37) {\textbf{The lost tourist.} No line at all.};
+  % sailor: tacking upwind
+  \draw[->,sblue,line width=1.3pt] (3.2,0.78) -- (5.2,1.95) -- (3.6,2.9) -- (5.6,3.8) -- (4.5,4.45) -- (5.62,4.97);
+  \node[lab,anchor=east] at (3.35,3.0) {\textbf{The sailor.} Never where\\the wind points, and\\always toward the port.};
+\end{tikzpicture}%

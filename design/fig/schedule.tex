@@ -1,0 +1,23 @@
+% Chapter 7, the story: one week posted in advance, and the Harbor Grill's week. A drawing, not data.
+\begin{tikzpicture}[x=0.925cm,y=0.925cm,lab/.style={font=\sffamily\fontsize{7.6}{9.6}\selectfont,inner sep=1.5pt}]
+  \newcommand{\weekgrid}{%
+    \fill[panel] (0,0) rectangle (4.9,3.0);
+    \foreach \d [count=\i from 0] in {M,T,W,T,F,S,S}{\node[lab,text=muted,anchor=south] at (\i*0.7+0.35,3.02) {\d}; \ifnum\i>0 \draw[white,line width=1pt] (\i*0.7,0) -- (\i*0.7,3.0);\fi}
+    \node[lab,text=muted,anchor=east] at (-0.05,2.75) {morning}; \node[lab,text=muted,anchor=east] at (-0.05,0.25) {night};}
+  \begin{scope}[xshift=1.2cm]
+    \weekgrid
+    \foreach \i in {0,1,2,3,4}{\fill[sblue,rounded corners=1.2pt] (\i*0.7+0.1,1.45) rectangle (\i*0.7+0.6,2.65);}
+    \node[lab,anchor=north west,text width=4.45cm,align=left] at (0,-0.12) {\textbf{Posted in advance.} The same hours, known for weeks. A class, a second job, an appointment can be planned around them.};
+  \end{scope}
+  \begin{scope}[xshift=6.6cm]
+    \weekgrid
+    \fill[sorange,rounded corners=1.2pt] (0*0.7+0.1,1.9) rectangle (0*0.7+0.6,2.8);
+    \fill[sorange,rounded corners=1.2pt] (1*0.7+0.1,0.3) rectangle (1*0.7+0.6,1.5);
+    \fill[sorange,rounded corners=1.2pt] (2*0.7+0.1,2.0) rectangle (2*0.7+0.6,2.6);
+    \draw[sorange,line width=0.7pt,dash pattern=on 2pt off 1.5pt,rounded corners=1.2pt] (2*0.7+0.1,1.25) rectangle (2*0.7+0.6,2.0);
+    \fill[sorange,rounded corners=1.2pt] (4*0.7+0.1,0.9) rectangle (4*0.7+0.6,2.2);
+    \fill[sorange,rounded corners=1.2pt] (5*0.7+0.1,0.2) rectangle (5*0.7+0.6,1.0);
+    \fill[sorange,rounded corners=1.2pt] (6*0.7+0.1,1.6) rectangle (6*0.7+0.6,2.9);
+    \node[lab,anchor=north west,text width=4.45cm,align=left] at (0,-0.12) {\textbf{The Harbor Grill.} Posted Sunday night, moved on a day's notice. The dashed block is hours cut mid-shift, unpaid.};
+  \end{scope}
+\end{tikzpicture}%

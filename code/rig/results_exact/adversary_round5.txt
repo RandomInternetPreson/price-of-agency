@@ -1,0 +1,36 @@
+C1  follower dose vs master accuracy (famine over 90 days)
+     master q k=0  k=1  k=2  k=3  k=5  k=9    best k
+         0.80 0.074 0.049 0.064 0.140 0.439 0.439   1
+         0.85 0.074 0.038 0.037 0.069 0.225 0.225   2
+         0.90 0.074 0.030 0.019 0.025 0.076 0.076   2
+         0.95 0.074 0.022 0.008 0.005 0.010 0.010   3
+         0.99 0.074 0.017 0.003 0.000 0.000 0.000   5
+    Reading: one follower is optimal for q <= ~0.85; by q = 0.90 the herd line is where safety lies. T13(iii)'s
+    dose curve is a statement about an expert only somewhat better than the room; the general rule is to set the
+    dose by the expert's margin -- and by the dependence of his errors, which iid days cannot show.
+
+G3/C2  pooling with joint arrival and the fisher's effect on the town's catch (eight follow the master)
+    p=0.7 q=0.8:  alpha=0.00: read 0.2022 follow 0.0889 (read)  alpha=0.50: read 0.1533 follow 0.0889 (read)  alpha=0.90: read 0.1142 follow 0.0889 (read)  alpha=1.00: read 0.1044 follow 0.0889 (read)
+    p=0.7 q=0.9:  alpha=0.00: read 0.1400 follow 0.1000 (read)  alpha=0.50: read 0.1239 follow 0.1000 (read)  alpha=0.90: read 0.1110 follow 0.1000 (read)  alpha=1.00: read 0.1078 follow 0.1000 (read)
+    p=0.7 q=0.99:  alpha=0.00: read 0.0840 follow 0.1100 (FOLLOW)  alpha=0.50: read 0.0974 follow 0.1100 (FOLLOW)  alpha=0.90: read 0.1081 follow 0.1100 (FOLLOW)  alpha=1.00: read 0.1108 follow 0.1100 (read)
+    Reading: the v0.26 inequality 0.7V > 0.8V/k was wrong twice -- it ignored joint arrival (when both are right they
+    share) and the fact that the reader's choice changes the town's total catch, so the pooled share does not cancel.
+    In the printed town (0.7 vs 0.8) reading pays at every pooling fraction, full pooling included; against a 0.99
+    master, following pays at every fraction. Pooling is not what decides it; the master's margin is.
+
+G2A  hit rate of the plateau strategy vs the captain
+    n=4 s=0.3: captain P(A=F)=0.775  plateau (hand) P(A=F)=0.475  chance=0.250   plateau < captain
+    n=4 s=0.5: captain P(A=F)=0.625  plateau (hand) P(A=F)=0.625  chance=0.250   plateau = captain
+    n=4 s=0.7: captain P(A=F)=0.475  plateau (hand) P(A=F)=0.775  chance=0.250   plateau > captain
+    n=6 s=0.3: captain P(A=F)=0.750  plateau (hand) P(A=F)=0.417  chance=0.167   plateau < captain
+    n=6 s=0.5: captain P(A=F)=0.583  plateau (hand) P(A=F)=0.583  chance=0.167   plateau = captain
+    Reading: the plateau strategy beats chance always and the captain only when s > 1/2 (equal at 1/2). 'Ines still
+    wins' must say 'more than chance', which is what Theorem 6 claims; beating the captain was never the claim.
+
+C4  menu padding: an irrelevant random tag with m values appended to the action
+    m=1: delta_A = 0.8113   (aim unchanged)
+    m=2: delta_A = 0.9057   (aim unchanged)
+    m=4: delta_A = 0.9371   (aim unchanged)
+    m=8: delta_A = 0.9528   (aim unchanged)
+    Reading: independence depends on the action alphabet; two labels with identical consequences on every future must
+    be one action, or the ruler can be inflated for free. Audit rule: the alphabet is quotiented by consequence.

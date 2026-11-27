@@ -1,0 +1,9 @@
+book.aux
+book.log
+book.out
+__pycache__/
+samples/*.aux
+samples/*.log
+book_print.aux
+book_print.log
+book_print.out

@@ -1,0 +1,47 @@
+R4a  total schedule uncertainty vs headcount N
+         N    fixed k=2: N*h(2/N)  per worker   proportional f=0.1: N*h(0.1)  per worker
+        10                   7.22       0.722                           4.69       0.469
+        20                   9.38       0.469                           9.38       0.469
+        50                  12.11       0.242                          23.45       0.469
+       100                  14.14       0.141                          46.90       0.469
+      1000                  20.81       0.021                         469.00       0.469
+     Reading: with a FIXED shortfall the per-worker uncertainty vanishes as N grows (the reviewer's limit).
+     With a PROPORTIONAL shortfall -- a demand shock is a fraction of demand -- per-worker uncertainty is
+     constant in N and the total is linear: exactly T17's broadcast scaling. The cascade's input is variance
+     of demand, which is proportional; the reviewer's limit is a fixed number of cut shifts.
+
+R4b  spread vs tiered, N=20, shortfall 2 shifts, under three loss shapes
+         loss shape   spread (all 20 at 0.47 bits)   tiered (2 at 1 bit, 18 at 0)
+             linear                           9.38                           2.00
+               gate                           0.00                           2.00
+        gate+linear                           4.69                           2.00
+     gate theta=0.30: spread  20.0   tiered   2.0
+     gate theta=0.47: spread   0.0   tiered   2.0
+     gate theta=0.60: spread   0.0   tiered   2.0
+     Reading: concentrating uncertainty is cheaper in total bits (h is concave) and cheaper in agency when the
+     gate sits above the spread level (theta > h(k/N)): tiering keeps 18 planners whole and sacrifices 2. When
+     the gate sits below the spread level, spreading pushes ALL 20 below it -- the worst case -- and tiering
+     is better still. So tiering dominates on the book's own gate; T17's broadcast is the un-tiered pool, which
+     is what algorithmic scheduling in the Shift Project data looks like (on-call for everyone). The ledger
+     points to tiering, compensated, as the engineering fix: the reviewer is right and it is a result, not a loss.
+
+R5   kappa* with population mass below / at / above the gate (Beta priors; sigma = self-knowledge noise)
+        s  gate    population (Beta)  mode  sig=0.05 sig=0.10 sig=0.20 sig=0.30
+      0.3  0.70      mass BELOW gate  0.50      1.13     1.92    50.00    50.00
+      0.3  0.70         mass AT gate  0.70      1.01     0.98     1.11     1.39
+      0.3  0.70      mass ABOVE gate  0.90      0.88     0.59     0.14     0.05
+      0.5  0.50      mass BELOW gate  0.30      1.11     1.53    11.66    50.00
+      0.5  0.50         mass AT gate  0.50      1.01     1.01     1.01     1.03
+      0.5  0.50      mass ABOVE gate  0.70      0.90     0.65     0.10     0.05
+      0.7  0.30      mass BELOW gate  0.10      1.16     1.71     7.35    50.00
+      0.7  0.30         mass AT gate  0.30      1.01     0.98     0.90     0.71
+      0.7  0.30      mass ABOVE gate  0.50      0.88     0.52     0.05     0.05
+     Reading: the sign of kappa* - 1 follows where the population sits relative to the gate, not the world's
+     noise. Mass at the gate -> ~1 (the book's near-gate populations). Mass above -> kappa* < 1 (a margin
+     silences people who should act). Mass BELOW the gate with noisy self-knowledge -> kappa* runs to the top
+     of the grid: the accuracy-optimal rule for a starved population is that NOBODY acts on their own judgment.
+     The reviewer's correction is right, and it proves more than it wants: per-decision accuracy is maximized by
+     welding every gate -- which is the shared-tutor town of Lesson 2, N_eff = 1, that starves. Accuracy is not
+     survival (T13: nine 0.70 heads beat one 0.80 head). The gate kappa* protects per-decision accuracy; the
+     town's famine metric is what independent action protects, and the two objectives part company exactly
+     where the reviewer's margin is largest.

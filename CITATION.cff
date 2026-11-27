@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "To cite the book or anything in this repository, cite the book. Claude (Anthropic) was its mathematical collaborator, as the title page says."
+title: "The Price of Agency"
+authors:
+  - family-names: Alai
+    given-names: Aaron
+version: "0.50"
+date-released: 2026-11-27
+doi: 10.5281/zenodo.24599088
+repository-code: "https://github.com/RandomInternetPreson/price-of-agency"
+license:
+  - CC-BY-4.0
+  - MIT
+abstract: "A book that builds two measures of freedom from two assumptions (no one has perfect knowledge; mistakes are inevitable), computes what raises and lowers a person on both, and prices the lowering. Every claim is tagged as proven, exact, simulated, data or conjecture. The repository holds the text, every script, every results file, a command that re-runs the computations and checks each number against the book, and a schedule calculator that runs on the reader's own device."
+keywords:
+  - agency
+  - information theory
+  - schedule instability
+  - reproducible research
+preferred-citation:
+  type: book
+  title: "The Price of Agency: Freedom, measured. Theft, priced. No opinions required."
+  authors:
+    - family-names: Alai
+      given-names: Aaron
+  year: 2026
+  edition: "Draft v0.50"
+  notes: "With Claude (Anthropic) as mathematical collaborator."
+  doi: 10.5281/zenodo.24599088
+  url: "https://github.com/RandomInternetPreson/price-of-agency"

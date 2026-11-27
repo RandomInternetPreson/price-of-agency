@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+.venv_reproduce/
+release/
+design/*.aux
+design/*.log
+design/*.out

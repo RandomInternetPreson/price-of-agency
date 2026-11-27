@@ -1,0 +1,29 @@
+% Chapter 5, the story: the same crossroads with the lights working and with the lights out. A drawing, not data.
+\begin{tikzpicture}[x=1cm,y=1cm,>={Stealth[length=4.2pt,width=3.6pt]}]
+\newcommand{\crossroads}[1]{%
+  \fill[road] (-2.35,-0.62) rectangle (2.35,0.62); \fill[road] (-0.62,-2.35) rectangle (0.62,2.35);
+  \foreach \a in {0,90,180,270}{\draw[white,line width=0.9pt,dash pattern=on 4pt off 4pt,rotate=\a] (0.78,0) -- (2.35,0);}
+  \foreach \x/\y in {0.86/0.86,-0.86/0.86,0.86/-0.86,-0.86/-0.86}{%
+     \ifnum#1=1 \fill[ink] (\x,\y) circle (2.5pt); \foreach \r in {0,45,...,315}{\draw[ink,line width=0.45pt] ($(\x,\y)+(\r:3.6pt)$) -- ($(\x,\y)+(\r:5.4pt)$);}
+     \else \draw[muted,line width=0.6pt,fill=white] (\x,\y) circle (2.5pt);\fi}}
+\newcommand{\carN}[3]{\fill[#3,rounded corners=1.6pt] ($(#1,#2)+(-0.13,-0.24)$) rectangle ($(#1,#2)+(0.13,0.24)$);}
+\newcommand{\carE}[3]{\fill[#3,rounded corners=1.6pt] ($(#1,#2)+(-0.24,-0.13)$) rectangle ($(#1,#2)+(0.24,0.13)$);}
+  \begin{scope}[xshift=2.35cm]
+   \crossroads{1}
+   \carN{0.3}{-1.55}{car}\carN{0.3}{-0.2}{car}\carN{-0.3}{1.45}{car}\carN{-0.3}{0.15}{car}
+   \carE{-1.1}{-0.3}{car}\carE{-1.85}{-0.3}{car}\carE{1.1}{0.3}{car}
+   \draw[->,ink,line width=0.7pt] (0.3,0.15) -- (0.3,0.95); \draw[->,ink,line width=0.7pt] (0.3,-1.2) -- (0.3,-0.55);
+   \draw[->,ink,line width=0.7pt] (-0.3,-0.2) -- (-0.3,-1.0); \draw[->,ink,line width=0.7pt] (-0.3,1.1) -- (-0.3,0.5);
+   \node[anchor=north west,inner sep=0pt,text width=4.6cm,font=\sffamily\fontsize{8}{10.4}\selectfont] at (-2.35,-2.55)
+     {\textbf{Lights working.} Every car does what the light says. Watch the lights and you know them all.};
+  \end{scope}
+  \begin{scope}[xshift=8.6cm]
+   \crossroads{0}
+   \carN{0.3}{-2.0}{car}\carN{0.3}{-1.4}{car}\carN{0.3}{-0.85}{car}
+   \carE{1.0}{0.3}{car}\carE{1.6}{0.3}{car}\carN{-0.3}{1.2}{car}
+   \carE{-1.0}{-0.3}{sblue}
+   \draw[->,sblue,line width=1.1pt] (-0.7,-0.3) .. controls (-0.1,-0.3) and (0.3,-0.1) .. (0.3,0.75);
+   \node[anchor=north west,inner sep=0pt,text width=4.6cm,font=\sffamily\fontsize{8}{10.4}\selectfont] at (-2.35,-2.55)
+     {\textbf{Lights out.} Most drivers wait on the car ahead. One, in blue, makes her own call.};
+  \end{scope}
+\end{tikzpicture}%

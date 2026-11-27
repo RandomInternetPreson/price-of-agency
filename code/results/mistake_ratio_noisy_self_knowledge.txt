@@ -1,0 +1,63 @@
+n = 2 options
+  everyone equally likely to have any fidelity (uniform population)
+       s  gate 1-s  sigma=0.00 sigma=0.05 sigma=0.10 sigma=0.20 sigma=0.30
+     0.3      0.70        1.00       1.00       1.00       1.16       2.17
+     0.5      0.50        1.00       1.00       1.00       1.00       1.00
+     0.7      0.30        1.00       1.00       1.00       0.92       0.73
+  population gathered below, at, or above its gate (Beta, concentration 12)
+       s  gate   population  mode  sigma=0.05 sigma=0.10 sigma=0.20 sigma=0.30
+     0.3  0.70        below  0.50        1.13       1.87   top (50)   top (50)
+     0.3  0.70           at  0.70        1.00       1.04       1.31       2.35
+     0.3  0.70        above  0.90        0.89       0.68       0.31     bottom
+     0.5  0.50        below  0.30        1.06       1.32       6.65   top (50)
+     0.5  0.50           at  0.50        1.00       1.00       1.00       1.00
+     0.5  0.50        above  0.70        0.94       0.78       0.40     bottom
+     0.7  0.30        below  0.10        1.06       1.29       3.48   top (50)
+     0.7  0.30           at  0.30        1.00       0.98       0.87       0.71
+     0.7  0.30        above  0.50        0.94       0.76     bottom     bottom
+  CHECK n=2: at the gate, kappa* between 0.98 and 1.04 (noise 0.05 and 0.10)
+  CHECK n=2: above the gate, kappa* below 1 in 12 of 12 cells (largest 0.94)
+  CHECK n=2: below the gate, kappa* above 1 in 12 of 12 cells; at the top of the grid in 4 of 6 cells with noise 0.2 or 0.3 (smallest 3.48)
+
+n = 8 options
+  everyone equally likely to have any fidelity (uniform population)
+       s  gate 1-s  sigma=0.00 sigma=0.05 sigma=0.10 sigma=0.20 sigma=0.30
+     0.3      0.70        1.00       1.00       1.00       1.15       2.05
+     0.5      0.50        1.00       1.00       1.00       1.00       1.00
+     0.7      0.30        1.00       1.00       1.00       0.95       0.81
+  population gathered below, at, or above its gate (Beta, concentration 12)
+       s  gate   population  mode  sigma=0.05 sigma=0.10 sigma=0.20 sigma=0.30
+     0.3  0.70        below  0.50        1.11       1.76   top (50)   top (50)
+     0.3  0.70           at  0.70        1.00       1.03       1.26       2.20
+     0.3  0.70        above  0.90        0.91       0.72       0.38     bottom
+     0.5  0.50        below  0.30        1.05       1.26       5.53   top (50)
+     0.5  0.50           at  0.50        1.00       1.00       1.00       1.00
+     0.5  0.50        above  0.70        0.95       0.82       0.53     bottom
+     0.7  0.30        below  0.10        1.05       1.21       2.77   top (50)
+     0.7  0.30           at  0.30        1.00       0.99       0.91       0.80
+     0.7  0.30        above  0.50        0.96       0.83     bottom     bottom
+  CHECK n=8: at the gate, kappa* between 0.99 and 1.03 (noise 0.05 and 0.10)
+  CHECK n=8: above the gate, kappa* below 1 in 12 of 12 cells (largest 0.96)
+  CHECK n=8: below the gate, kappa* above 1 in 12 of 12 cells; at the top of the grid in 4 of 6 cells with noise 0.2 or 0.3 (smallest 2.77)
+
+n = 64 options
+  everyone equally likely to have any fidelity (uniform population)
+       s  gate 1-s  sigma=0.00 sigma=0.05 sigma=0.10 sigma=0.20 sigma=0.30
+     0.3      0.70        1.00       1.00       1.00       1.14       2.00
+     0.5      0.50        1.00       1.00       1.00       1.00       1.00
+     0.7      0.30        1.00       1.00       1.00       0.95       0.82
+  population gathered below, at, or above its gate (Beta, concentration 12)
+       s  gate   population  mode  sigma=0.05 sigma=0.10 sigma=0.20 sigma=0.30
+     0.3  0.70        below  0.50        1.11       1.74   top (50)   top (50)
+     0.3  0.70           at  0.70        1.00       1.03       1.26       2.15
+     0.3  0.70        above  0.90        0.91       0.73       0.41     bottom
+     0.5  0.50        below  0.30        1.05       1.25       5.28   top (50)
+     0.5  0.50           at  0.50        1.00       1.00       1.00       1.00
+     0.5  0.50        above  0.70        0.96       0.83       0.55     bottom
+     0.7  0.30        below  0.10        1.04       1.19       2.64   top (50)
+     0.7  0.30           at  0.30        1.00       0.99       0.91       0.81
+     0.7  0.30        above  0.50        0.96       0.84     bottom     bottom
+  CHECK n=64: at the gate, kappa* between 0.99 and 1.03 (noise 0.05 and 0.10)
+  CHECK n=64: above the gate, kappa* below 1 in 12 of 12 cells (largest 0.96)
+  CHECK n=64: below the gate, kappa* above 1 in 12 of 12 cells; at the top of the grid in 4 of 6 cells with noise 0.2 or 0.3 (smallest 2.64)
+

@@ -1,0 +1,14 @@
+R3  starved fleets vs the hub (famine = <5 of 9 on the right ground, 3 days running; hub 0.80)
+     education e  right-ground acc  independent famine  follow hub  independence helps?
+            0.90             0.925               0.000       0.439                  yes
+            0.70             0.775               0.003       0.439                  yes
+            0.60             0.700               0.074       0.439                  yes
+            0.50             0.625               0.515       0.439                   NO
+            0.40             0.550               0.967       0.439                   NO
+            0.35             0.512               0.998       0.439                   NO
+            0.30             0.475               1.000       0.439                   NO
+            0.20             0.400               1.000       0.439                   NO
+    Condorcet crossover on this metric: independence beats the 0.80 hub iff right-ground accuracy > ~0.63 (e > ~0.51);
+    below it, independent voting amplifies error and the fleet should follow the hub. Two regimes, as the
+    reviewer says: moderately competent (0.63 < acc < 0.80) -> individual rationality says follow, survival
+    says vote -- the wedge exists at zero self-knowledge noise; deeply starved -> nothing but education helps.

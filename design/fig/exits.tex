@@ -1,0 +1,16 @@
+% Chapter 2: the three exits from Bell's theorem. A drawing, not data. It ranks nothing.
+\begin{tikzpicture}[x=1cm,y=1cm,lab/.style={font=\sffamily\fontsize{7.6}{9.6}\selectfont,inner sep=1.5pt}]
+  \newcommand{\doorframe}[1]{\draw[ink,line width=0.7pt] (#1,0) -- (#1,3.0) -- (#1+1.7,3.0) -- (#1+1.7,0); \draw[ink,line width=0.7pt] (#1-0.5,0) -- (#1+2.2,0);}
+  % door one and door two: closed leaves
+  \foreach \x in {0.6,3.5}{\doorframe{\x} \fill[panel] (\x+0.06,0.03) rectangle (\x+1.64,2.94); \fill[car] (\x+1.4,1.45) circle (1.6pt);}
+  % door three: ajar, with the fare hung on it
+  \doorframe{6.4}
+  \fill[water] (6.46,0.03) rectangle (8.04,2.94);
+  \fill[panel] (6.46,0.03) -- (6.46,2.94) -- (7.2,2.66) -- (7.2,0.31) -- cycle; \draw[car,line width=0.4pt] (6.46,0.03) -- (6.46,2.94) -- (7.2,2.66) -- (7.2,0.31) -- cycle;
+  \fill[car] (7.07,1.45) circle (1.6pt);
+  \draw[sblue,line width=0.5pt] (7.07,1.45) -- (8.35,1.55);
+  \node[draw=sblue,line width=0.6pt,fill=white,inner sep=3pt,anchor=south west,font=\sffamily\fontsize{7}{8.6}\selectfont,align=left,text=ink] at (8.35,1.2) {the fare, posted:\\\textbf{13.81\%} at two particles,\\never more than half};
+  \node[lab,anchor=north,text width=2.8cm,align=center] at (1.45,-0.12) {\textbf{Give up locality.}\\Spooky action.};
+  \node[lab,anchor=north,text width=2.8cm,align=center] at (4.35,-0.12) {\textbf{Give up single\\outcomes.}\\Many worlds.};
+  \node[lab,anchor=north,text width=3.0cm,align=center] at (7.25,-0.12) {\textbf{Relax measurement\\independence,}\\lawfully and in part.};
+\end{tikzpicture}%

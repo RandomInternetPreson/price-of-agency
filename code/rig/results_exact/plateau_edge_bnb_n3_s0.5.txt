@@ -1,0 +1,5 @@
+2026-11-09 10:11 n=3 s=0.5 tol_aim=0.001 budget=120.0s workers=1: edge in [0.000000, 0.000000] nodes=1
+2026-11-09 10:11 n=3 s=0.5 tol_aim=0.001 budget=120.0s workers=1: edge in [0.369070, 0.369070] nodes=2537
+2026-11-09 10:29 n=3 s=0.5 tol_aim=0.001 budget=60.0s workers=1: edge in [0.369070, 0.369070] nodes=1371
+2026-11-09 16:29 n=3 s=0.5 tol_aim=0.001 budget=60.0s workers=1: edge in [0.369070, 0.369576] nodes=1371
+2026-11-09 16:29 n=3 s=0.5 tol_aim=1e-05 budget=600.0s workers=1: edge in [0.369070, 0.369070] nodes=1379

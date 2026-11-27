@@ -1,0 +1,17 @@
+% Chapter 4: the plane the two rulers draw, with the harbor's three people on it. A drawing of the definitions, not data.
+\begin{tikzpicture}[x=5.6cm,y=5.6cm,lab/.style={font=\sffamily\fontsize{7.8}{9.8}\selectfont,inner sep=2pt,align=left}]
+  \begin{scope}[xshift=2.9cm]
+  \draw[hair,line width=0.5pt] (0,0) rectangle (1,1);
+  \fill[sblue,opacity=0.12] (0.75,0.76) ellipse (0.17 and 0.12);
+  \draw[ink,line width=0.8pt] (0,0) -- (1,0); \draw[ink,line width=0.8pt] (0,0) -- (0,1);
+  \node[lab,text=muted,anchor=north] at (0.5,-0.075) {Aim};
+  \node[lab,text=muted,anchor=south,rotate=90] at (-0.075,0.5) {Independence};
+  \foreach \v in {0,1}{\node[lab,text=muted,anchor=north] at (\v,-0.01) {\v}; \node[lab,text=muted,anchor=east] at (-0.01,\v) {\v};}
+  \fill[sorange] (0,1) circle (2.8pt);
+  \node[lab,anchor=north west,text width=2.5cm] at (0.03,0.975) {\textbf{The tourist}\\nobody can call his next turn, and it serves nothing};
+  \fill[ink] (1,0) circle (2.8pt);
+  \node[lab,anchor=south east,text width=2.5cm,align=right] at (0.97,0.025) {\textbf{The ferry captain}\\never wrong, and written in the timetable};
+  \node[lab,anchor=south,text=ink] at (0.75,0.755) {\textbf{The sailor}};
+  \node[lab,anchor=north,text=muted] at (0.75,0.76) {high on both};
+  \end{scope}
+\end{tikzpicture}%

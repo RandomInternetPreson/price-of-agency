@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- This line is the guarantee. It tells the browser to refuse every network connection this page could try to make:
+     no requests, no fonts, no images, no forms sent anywhere. The page works with the network unplugged. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Who holds the eraser? A ruler for your schedule</title>
+<style>
+  :root {
+    --paper: #ffffff; --ink: #1a1a1a; --muted: #5b5b57; --hair: #cfcec9; --panel: #f4f3f0;
+    --mach: #1c5cab; --rcpt: #8a5a14; --past: #2a78d6; --some: #a9b4c2; --none: #e1e0dc; --warn: #b3261e;
+    --serif: "Palatino Linotype", Palatino, "Book Antiqua", "TeX Gyre Pagella", Georgia, serif;
+    --sans: "Fira Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --ledger: 7.2rem; --gap: 1.5rem; --measure: 41rem;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; }
+  .page { max-width: calc(var(--ledger) + var(--gap) + var(--measure) + 2rem); margin: 0 auto; padding: 2.6rem 1rem 4rem; }
+  .block { display: grid; grid-template-columns: var(--ledger) minmax(0, 1fr); column-gap: var(--gap); }
+  .block > .ledger { font-family: var(--sans); font-size: 0.78rem; line-height: 1.35; color: var(--muted); text-align: right; padding-top: 0.5rem; }
+  .block > .ledger b { color: var(--ink); font-weight: 600; display: block; font-size: 0.86rem; }
+  .block > .body { min-width: 0; }
+  h1 { font-weight: 400; font-size: clamp(2.2rem, 6vw, 3.25rem); line-height: 1.06; margin: 0 0 0.9rem; letter-spacing: -0.01em; }
+  h2 { font-weight: 700; font-size: 1.3rem; line-height: 1.25; margin: 0 0 0.55rem; }
+  h3 { font-family: var(--sans); font-weight: 600; font-size: 1.02rem; margin: 0 0 0.5rem; }
+  p { margin: 0 0 0.85rem; max-width: var(--measure); }
+  .lede { font-style: italic; font-size: 1.16rem; }
+  .small, .note { font-family: var(--sans); font-size: 0.84rem; line-height: 1.45; color: var(--muted); }
+  section { margin-top: 2.6rem; }
+  a { color: var(--mach); text-underline-offset: 0.15em; }
+  .rule-mach { border-left: 3px solid var(--mach); padding-left: 1.05rem; }
+  .rule-rcpt { border-left: 5px double var(--rcpt); padding-left: 1.05rem; }
+  .promise { background: var(--panel); padding: 0.85rem 1rem; margin: 1.2rem 0 0; font-family: var(--sans); font-size: 0.9rem; line-height: 1.5; max-width: var(--measure); }
+  .promise b { font-weight: 600; }
+  .stamp { font-family: var(--sans); font-size: 0.66rem; letter-spacing: 0.07em; border: 1px solid currentColor; border-radius: 2px; padding: 0.08em 0.38em 0.02em; white-space: nowrap; vertical-align: 0.14em; color: var(--muted); font-weight: 400; margin-left: 0.4rem; }
+
+  /* the answers */
+  .q { border-top: 1px solid var(--hair); padding: 0.8rem 0 0.85rem; }
+  .q:last-of-type { border-bottom: 1px solid var(--hair); }
+  .q > label, .q > .lab { display: block; font-weight: 700; margin-bottom: 0.15rem; }
+  .q .help { font-family: var(--sans); font-size: 0.82rem; line-height: 1.45; color: var(--muted); margin: 0 0 0.5rem; max-width: 36rem; }
+  .row { display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem; align-items: center; }
+  .pair { display: flex; flex-direction: column; gap: 0.2rem; font-family: var(--sans); font-size: 0.8rem; color: var(--muted); }
+  input[type=number], input[type=date], input[type=time], select { font-family: var(--sans); font-size: 0.98rem; color: var(--ink); background: var(--paper); border: 1px solid #9f9e99; border-radius: 3px; padding: 0.36rem 0.45rem; max-width: 100%; }
+  input[type=number] { width: 5.2rem; }
+  input[type=range] { width: min(100%, 20rem); accent-color: var(--mach); }
+  output.val { font-family: var(--sans); font-size: 1.05rem; font-variant-numeric: tabular-nums; min-width: 6.5rem; }
+  :focus-visible { outline: 2px solid var(--mach); outline-offset: 2px; }
+  .hide { display: none !important; }
+  button { font-family: var(--sans); font-size: 0.9rem; color: var(--ink); background: var(--paper); border: 1px solid #9f9e99; border-radius: 3px; padding: 0.42rem 0.8rem; cursor: pointer; }
+  button:hover { background: var(--panel); }
+  button.primary { background: var(--mach); border-color: var(--mach); color: #fff; }
+  button.primary:hover { background: #164a8b; }
+  button.quiet { border-color: transparent; color: var(--muted); padding: 0.3rem 0.4rem; }
+  .bar { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.9rem 0 0.2rem; align-items: center; }
+  .bar .spacer { flex: 1 1 auto; }
+  label.check { font-family: var(--sans); font-size: 0.86rem; color: var(--ink); display: inline-flex; gap: 0.45rem; align-items: center; }
+  details.drawer { margin-top: 1rem; } details.drawer > summary { cursor: pointer; font-family: var(--sans); font-size: 0.9rem; color: var(--mach); padding: 0.3rem 0; }
+
+  /* the shift log */
+  .shift { border-top: 1px solid var(--hair); padding: 0.7rem 0 0.75rem; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 0.5rem 0.7rem; align-items: end; }
+  .shift.bad { box-shadow: inset 3px 0 0 var(--warn); padding-left: 0.6rem; }
+  .f { display: flex; flex-direction: column; gap: 0.2rem; font-family: var(--sans); font-size: 0.78rem; color: var(--muted); min-width: 0; }
+  .f input, .f select { width: 100%; min-width: 0; font-size: 0.92rem; }
+  .c-3 { grid-column: span 3; } .c-5 { grid-column: 1 / span 5; } .c-x { grid-column-end: -1; grid-column-start: span 2; justify-self: end; }
+  .c-all { grid-column: 1 / -1; } .c-msg { grid-column: 1 / -1; font-family: var(--sans); font-size: 0.8rem; color: var(--warn); }
+
+  /* the receipt */
+  .part { font-family: var(--sans); font-size: 0.8rem; color: var(--muted); margin: 1.6rem 0 0.2rem; }
+  .figures { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1.2rem 1.8rem; margin: 0.6rem 0 1.2rem; }
+  .fig-n { font-size: 2.05rem; line-height: 1.05; font-variant-numeric: tabular-nums; }
+  .fig-l { font-size: 0.98rem; line-height: 1.45; margin-top: 0.35rem; }
+  .line { border-top: 1px solid var(--hair); padding: 1rem 0 0.4rem; }
+  .line p { margin-bottom: 0.7rem; }
+  .scen { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.5rem 0 0.8rem; }
+  .scen button { font-size: 0.82rem; padding: 0.3rem 0.6rem; }
+  .scen button[aria-pressed=true] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .cohort { display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr); gap: 1.2rem 1.6rem; align-items: start; }
+  canvas { display: block; width: 100%; height: auto; image-rendering: pixelated; }
+  .legend { list-style: none; margin: 0 0 0.6rem; padding: 0; font-family: var(--sans); font-size: 0.86rem; line-height: 1.4; }
+  .legend li { display: grid; grid-template-columns: 0.9rem 4.2rem 1fr; gap: 0.5rem; align-items: baseline; margin-bottom: 0.45rem; }
+  .legend.plain li { grid-template-columns: 0.9rem 1fr; }
+  .legend .sw { width: 0.8rem; height: 0.8rem; border-radius: 2px; display: inline-block; transform: translateY(0.08rem); }
+  .legend .n { font-variant-numeric: tabular-nums; text-align: right; font-weight: 600; }
+  .yr { margin: 0.2rem 0 0.9rem; } .yr .name { font-family: var(--sans); font-weight: 600; font-size: 0.9rem; margin: 0 0 0.25rem; }
+  .yr .track { display: flex; gap: 2px; height: 1.15rem; } .yr .track span { display: block; border-radius: 2px; min-width: 0; }
+  .yr .count { font-family: var(--sans); font-size: 0.86rem; line-height: 1.4; color: var(--ink); margin: 0.3rem 0 0; }
+  svg { display: block; max-width: 100%; height: auto; font-family: var(--sans); overflow: visible; }
+  .tw { overflow-x: auto; }
+  table.t { border-collapse: collapse; font-family: var(--sans); font-size: 0.86rem; line-height: 1.35; font-variant-numeric: tabular-nums; margin: 0.3rem 0 0.7rem; min-width: 100%; }
+  table.t caption { text-align: left; color: var(--muted); padding-bottom: 0.3rem; }
+  table.t th, table.t td { text-align: left; padding: 0.3rem 1rem 0.3rem 0; border-bottom: 1px solid var(--hair); font-weight: 400; vertical-align: top; }
+  table.t th { color: var(--muted); border-bottom-color: var(--ink); } table.t td.n, table.t th.n { text-align: right; }
+  table.t tr.now td { font-weight: 600; } table.t td small { display: block; color: var(--muted); font-weight: 400; max-width: 19rem; }
+  .say { background: var(--panel); padding: 0.9rem 1rem; max-width: var(--measure); } .say p { margin: 0; }
+  ol.q5, ul.plain, ol.plain { padding-left: 1.2rem; max-width: var(--measure); } ol.q5 li, .plain li { margin-bottom: 0.45rem; }
+  footer { margin-top: 2.4rem; }
+
+  @media (max-width: 46rem) {
+    .block { grid-template-columns: minmax(0, 1fr); }
+    .block > .ledger { text-align: left; padding: 0 0 0.3rem; }
+    .block > .ledger b { display: inline; margin-right: 0.5rem; }
+    .cohort { grid-template-columns: minmax(0, 1fr); }
+    .c-3 { grid-column: span 6; } .c-5 { grid-column: 1 / -1; } .c-x { grid-column: 1 / -1; justify-self: start; }
+  }
+  @media print {
+    .no-print, button, .bar, .scen, details.drawer { display: none !important; }
+    .page { padding: 0; } section { margin-top: 1.4rem; } .line, .q { break-inside: avoid; }
+    input, select { border: 0 !important; padding: 0 !important; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="block">
+    <div class="ledger"></div>
+    <div class="body">
+      <h1>Who holds the eraser?</h1>
+      <p class="lede">A ruler for your schedule.</p>
+      <p>&ldquo;Every plan is written in pencil, and the eraser belongs to the manager.&rdquo; That is from <cite>The Price of Agency</cite>, Chapter&nbsp;7. This page asks nine questions about one job. It tells you how often that job&rsquo;s schedule lets you be where you planned to be: at dinner with your family, at your child&rsquo;s game, at a class. Then it puts ten thousand people on the same schedule and shows what it does to them, and which change would help them most. Its counts are the most a schedule allows. It says what they leave out.</p>
+      <div class="promise">
+        <b>Nothing you type leaves this page.</b> There is no account, no server and no counter. The page is one file; a line near the top of it tells your browser to refuse every network connection. Save the file, turn the network off, and it works the same.
+      </div>
+    </div>
+  </header>
+
+  <section class="block" aria-labelledby="h-ans">
+    <div class="ledger"><b>§ 1</b>Nine questions<br>about two minutes</div>
+    <div class="body rule-mach">
+      <h2 id="h-ans">Your schedule, in nine questions</h2>
+      <p>The answers start at one example. Change them to yours. Rough answers are enough, and every number below changes as you do.</p>
+
+      <div class="q">
+        <label for="q-know">1. How many days ahead do you usually find out which hours you work?</label>
+        <div class="row"><input type="range" id="q-know" min="0" max="28" step="1"><output class="val" id="o-know" for="q-know"></output></div>
+      </div>
+      <div class="q">
+        <label for="q-chg">2. Out of ten shifts, how many get changed after you were told them, by a decision that was not freely yours?</label>
+        <p class="help">Moved, cut short, made longer, canceled, or added on a day off. Count a change you asked for if you only asked because an earlier change, or a week with too few hours, left you no real choice. Do not count a swap you wanted and could have left alone.</p>
+        <div class="row"><input type="range" id="q-chg" min="0" max="10" step="1"><output class="val" id="o-chg" for="q-chg"></output></div>
+      </div>
+      <div class="q">
+        <label for="q-warn">3. When a shift gets changed like that, how much warning do you usually get?</label>
+        <div class="row"><select id="q-warn"><option value="0.25">I find out the same day</option><option value="1">A day</option><option value="2.5">Two or three days</option><option value="7">About a week</option><option value="14">Two weeks or more</option></select></div>
+      </div>
+      <div class="q">
+        <span class="lab" id="l-work">4 and 5. How much do you work?</span>
+        <div class="row" role="group" aria-labelledby="l-work">
+          <label class="pair">Shifts in a week<input type="number" id="q-days" min="1" max="7" step="1" inputmode="numeric"></label>
+          <label class="pair">Hours in a usual shift<input type="number" id="q-len" min="1" max="16" step="0.5" inputmode="decimal"></label>
+          <label class="pair">Hourly pay (only if you want dollar figures)<input type="number" id="q-pay" min="0" step="0.25" inputmode="decimal" placeholder="optional"></label>
+        </div>
+      </div>
+      <div class="q">
+        <label for="q-lead">6. Think of something that happens at a set time and that you want to be there for: dinner with your family, your child&rsquo;s game, a night with friends, a class, an appointment. How far ahead does it have to be planned?</label>
+        <div class="row"><select id="q-lead"><option value="3">Three days ahead</option><option value="7">A week ahead</option><option value="14">Two weeks ahead</option><option value="28">A month ahead</option></select></div>
+      </div>
+      <div class="q">
+        <label for="q-kappa">7. Suppose you go your own way on something instead of doing what is expected, and it turns out wrong. How bad is that for you, compared with doing what was expected and being wrong?</label>
+        <p class="help">The book&rsquo;s example is a driver at an intersection. If she follows the car in front and it goes badly, she has a dented bumper and company. If she makes her own call and it goes badly, she loses the car, and the job the car gets her to.</p>
+        <div class="row"><select id="q-kappa"><option value="1">About the same</option><option value="2">Twice as bad</option><option value="5">Five times as bad</option><option value="10">Ten times as bad: it could cost me the job, the car or the apartment</option></select></div>
+      </div>
+      <div class="q">
+        <label for="q-sess">8. Now think of a course that could change your work, one class a week, with a certificate for the people who attend every class. How many classes would it have?</label>
+        <div class="row"><input type="number" id="q-sess" min="2" max="8" step="1" inputmode="numeric"></div>
+      </div>
+      <div class="q">
+        <label for="q-left">9. After a shift, how much do you have left for learning something? Think of sitting in that class the same evening.</label>
+        <p class="help">Some work hands back your hours and keeps what they are for. A shift spent taking other people&rsquo;s anger, on a script that will not let you fix what they are angry about, is one kind.</p>
+        <div class="row"><select id="q-left"><option value="1">About as much as on a day off</option><option value="0.5">About half as much</option><option value="0.25">Very little</option></select></div>
+      </div>
+
+      <details class="drawer no-print" id="logdrawer">
+        <summary>Have your shifts written down? Enter them, and questions 1 to 5 are answered from them</summary>
+        <p class="help" style="margin-top:.5rem">One row for each shift you were given, including the ones that were canceled. Enter the hours as you were first told them.</p>
+        <div id="shifts"></div>
+        <div class="bar">
+          <button type="button" class="primary" id="add">Add a shift</button>
+          <button type="button" id="copyweek">Add next week, same as this one</button>
+          <button type="button" id="fill">Answer questions 1 to 5 from these shifts</button>
+          <span class="spacer"></span>
+          <button type="button" class="quiet" id="clearshifts">Remove all shifts</button>
+        </div>
+      </details>
+
+      <div class="bar no-print">
+        <button type="button" id="save">Save to a file on this device</button>
+        <button type="button" id="load">Open a saved file</button>
+        <input type="file" id="file" accept=".json,application/json" class="hide">
+        <span class="spacer"></span>
+        <label class="check"><input type="checkbox" id="remember"> Remember my answers in this browser</label>
+      </div>
+      <p class="note" id="status" role="status" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="h-receipt">
+    <div class="ledger"><b>§ 2</b>Your receipt</div>
+    <div class="body rule-rcpt">
+      <h2 id="h-receipt">What your schedule does</h2>
+
+      <p class="part">Part one. Being there. This part uses only your answers.</p>
+      <div class="figures" id="figs"></div>
+
+      <div class="line">
+        <h3>Why you have to plan more than you get</h3>
+        <p id="tax-say"></p>
+        <div id="holdchart"></div>
+        <p class="small" id="hold-cap" style="margin-top:.5rem"></p>
+      </div>
+
+      <div class="line">
+        <h3>How far two weeks&rsquo; notice reaches</h3>
+        <p id="reach-intro">Seattle&rsquo;s law asks for two weeks&rsquo; notice. The laws like it in other places ask for the same, or less. Two weeks is a floor, and this table shows what stands on it and what does not. A fixed schedule means the same hours every week, known for as long as you hold the job.</p>
+        <p>The book&rsquo;s own data points the same way (Chapter&nbsp;13). In the Federal Reserve&rsquo;s survey of households, workers whose employer sets their hours and tells them three weeks ahead or more look like workers on fixed hours when asked about money. Workers told later than that, two weeks included, do not.</p>
+        <div class="tw"><table class="t" id="reach"></table></div>
+        <p id="reach-say"></p>
+      </div>
+
+      <div class="line">
+        <h3>Ten thousand people on your schedule, one plan a week for a year <span class="stamp">SIMULATION</span></h3>
+        <p id="yr-intro"></p>
+        <ul class="legend plain" id="yr-legend"></ul>
+        <div id="yr"></div>
+        <p id="yr-say"></p>
+      </div>
+
+      <div class="line">
+        <h3>Ten thousand people each plan three days in a row <span class="stamp">SIMULATION</span></h3>
+        <p id="trip-intro">A trip, a wedding out of town, the days around a birth. Each of ten thousand people on your schedule plans one of these three months ahead, and needs all three days. Lose one day and it is no longer what was planned.</p>
+        <ul class="legend plain" id="trip-legend"></ul>
+        <div id="trip"></div>
+        <p id="trip-say"></p>
+      </div>
+
+      <p class="part">Part two. Learning something. This part uses the book&rsquo;s model.</p>
+
+      <div class="line" style="border-top:0;padding-top:.2rem">
+        <h3>Ten thousand people on your schedule sign up for a course, and have to finish it <span class="stamp">SIMULATION</span></h3>
+        <div id="coh-intro"></div>
+        <div class="scen no-print" id="scen" role="group" aria-label="Which schedule to show"></div>
+        <div class="cohort">
+          <canvas id="field" width="400" height="400" role="img" aria-label="Ten thousand simulated people, one dot each"></canvas>
+          <div>
+            <ul class="legend" id="legend"></ul>
+            <div id="bars"></div>
+          </div>
+        </div>
+        <p id="coh-say" style="margin-top:.9rem"></p>
+      </div>
+
+      <div class="line">
+        <h3>Which change would help them most <span class="stamp">SIMULATION</span></h3>
+        <div class="tw"><table class="t" id="levers"></table></div>
+        <div id="lev-say"></div>
+      </div>
+
+      <div class="line">
+        <h3>What these counts take for granted</h3>
+        <p>Part two counts one thing: whether a person gets to every class with enough left to learn in them. The ten thousand people in it have been handed everything else. Each of them found a course that teaches what they need. Each of them can pay for it. Nobody at home needs those evenings more than the course does. No number on this page checks any of that, and wherever any of it fails, every count in the table is lower.</p>
+        <p>So read each count as the most this job allows, and not as what happens. A row that reads 10,000 says the job is no longer what stands in the way. It does not say that ten thousand people have what they need. And two weeks&rsquo; notice is where the laws stop. It is not where a life stops, which is why the table has a row for a fixed schedule.</p>
+      </div>
+
+      <div class="line">
+        <h3>The same groups on the book&rsquo;s two rulers <span class="stamp">EXACT</span></h3>
+        <p>The book measures freedom with two rulers. <b>Independence</b> asks how hard it is to guess what a person will do just from the situation they are in. <b>Aim</b> asks how much what they do has to do with what happens next. Each numbered point is the whole group of ten thousand under one schedule. Further right is more independence. Further up is more aim.</p>
+        <div id="plane"></div>
+      </div>
+
+      <div class="line">
+        <h3>What Seattle&rsquo;s law would have paid you, and where it stops</h3>
+        <p id="seattle"></p>
+      </div>
+
+      <div class="line">
+        <h3>Your record, in one paragraph</h3>
+        <div class="say"><p id="para"></p></div>
+        <div class="bar no-print"><button type="button" id="copy">Copy the paragraph</button><button type="button" id="print">Print this receipt</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="h-says">
+    <div class="ledger"><b>§ 3</b>What this is</div>
+    <div class="body">
+      <h2 id="h-says">What this page counts, and what it cannot see</h2>
+      <p><b>What it cannot see.</b> Most of what makes a life is not a course or an appointment. It is dinner with the people you love, a child&rsquo;s first steps, a board game at the family table, an evening with a pet and a film. Some of it is not a plan at all: a child needs someone there most evenings for years, and a birth comes when it comes. This page cannot measure any of that and does not try to. It counts one thing about those hours: whether they are still yours when they come.</p>
+      <p><b>Part one is your own numbers.</b> How often you can be where you planned to be is arithmetic on your answers. It holds for a family dinner exactly as it holds for a class. The suppositions it makes are listed at the bottom of the page.</p>
+      <p><b>Part two is the book&rsquo;s model, and it is narrower.</b> It is about learning, because that is what the book&rsquo;s theorem is about. Learning, in the book, is whatever leaves a person knowing something their surroundings do not tell them: a class, a trade, an hour alone with a problem, years among the people they live with. The model does not ask where the knowledge came from, only how often it is right. This page uses a course because classes can be counted, and it cannot count the rest. In the model, each class attended adds a little knowledge. Until there is enough, a person does what the situation in front of them calls for, the same as before. Once there is enough, what they learned starts to change what they do. The book calls that point the gate (Chapters 5 and 7). Nobody has measured where the gate is for a real person, in classes or in hours, and the book says so in Chapter&nbsp;15. What the model gives is the shape: nothing, nothing, and then something. A schedule decides how many people get that far. To the model this page adds one rule of its own: a course counts only when every class was attended, because that is who gets the certificate.</p>
+      <p><b>Why ten thousand people.</b> One person&rsquo;s year is one roll of the dice. What a schedule does shows only across many people living on it. The ten thousand are not you, and no dot is a forecast about you.</p>
+      <p><b>Who changed it.</b> Who asked for a change is the wrong test, and this page does not use it. A worker asks for a change because an earlier change broke her childcare. She asks for more shifts because the week came out short. She is asked to volunteer. And sometimes a manager moves a shift to exactly where she wanted it. The book&rsquo;s test is different (Chapters 7 and 13): could you have left things as they were at no cost to you, and did the change leave you better or worse off? Question 2 counts a change when the decision was not freely yours, whoever spoke first.</p>
+      <p>The five questions the book leaves with every reader:</p>
+      <ol class="q5">
+        <li><i>Who holds the eraser?</i> Not whether the hours vary: who can change them, and on how much notice.</li>
+        <li><i>What does one mistake cost here?</i></li>
+        <li><i>One ruler, or two?</i> Unpredictable is not free, and orderly is not fine: ask whose aim the hours serve.</li>
+        <li><i>How many heads were there, really?</i></li>
+        <li><i>Which tally, and which score?</i></li>
+      </ol>
+      <footer class="small">
+        <details>
+          <summary>How each number is computed</summary>
+          <p><b>How often you can be there.</b> A plan made <i>h</i> days ahead holds unless one of two things happens. (1) If <i>h</i> is more days than you know your hours ahead (question 1), the plan was made without knowing your shifts, and it is taken when a shift lands on it. The chance of that is the share of days you work, times the share of a sixteen-hour day that a shift plus a two-hour plan cover. (2) Your hours for that day get changed, by a decision not freely yours, with less than <i>h</i> days&rsquo; warning. The chance of that is your answer to question 2, times the share of changes that come with less than <i>h</i> days&rsquo; warning, taking the warnings to be spread around your answer to question 3 (exponentially). The page supposes you cannot get a day off by asking for it. Where an employer gives days off when asked and keeps to it, a plan made far ahead holds more often than this. Only the schedule takes plans in this count. Illness, a bus that does not come and everything else that costs an evening are left out, under every schedule alike.</p>
+          <p><b>&ldquo;Two weeks&rsquo; notice, kept.&rdquo;</b> Hours known fourteen days ahead, and no change made inside those fourteen days. Changes that come with more warning than that still happen as often as before.</p>
+          <p><b>&ldquo;A fixed schedule.&rdquo;</b> The same hours every week, known for as long as the job is held, and not changed. The page counts every plan as holding, because the hours are known when the plan is made and can be planned around. It does not count whether an employer gives time off.</p>
+          <p><b>Three days in a row.</b> Each of the three days has to be free for the whole day, so the chance that a shift lands on a day is the share of days you work. All three have to hold, each on its own chance.</p>
+          <p><b>One plan a week for a year.</b> Each of ten thousand people makes 52 plans, and each plan holds with the chance above, independently.</p>
+          <p><b>The model in part two.</b> A future with four possibilities. The situation points to the right one half the time and otherwise points at random. Each class attended is a glimpse that points to the right one with probability 0.35 and otherwise at random. The person weighs everything exactly and chooses what costs least on average: doing what the situation says and being wrong costs 1, going their own way and being wrong costs the answer to question 7. These are the constants of the book&rsquo;s Theorem&nbsp;16 (<code>code/iterative_time_T16.py</code>) and the costs of its Theorem&nbsp;5b (<code>code/mistake_budget_T18.py</code>). <code>code/calculator_model.py</code> in the book&rsquo;s repository computes the same tables in Python and checks them against both.</p>
+          <p><b>Enough learning.</b> The smallest number of classes attended at which the person ever goes their own way. For a person who comes to class with as much left as on a day off: two when a mistake costs the same either way, three when it costs twice as much, four when it costs five or ten times as much.</p>
+          <p><b>Question 9.</b> &ldquo;About half as much&rdquo; halves what one class teaches: each class points to the right possibility with probability 0.175, and the four numbers become three, five, six and seven. &ldquo;Very little&rdquo; quarters it, to 0.0875, and they become five, eight, eleven and thirteen. That a tired person learns less from a class in exact proportion is this page&rsquo;s supposition, not a measurement.</p>
+          <p><b>The course.</b> One class a week, the times set on the day of signing up, so class number <i>j</i> is a plan made <i>j</i> weeks ahead. Each person attends each class with the chance above for a plan made that far ahead, independently. A person who attends every class has finished. Afterwards that person meets one decision, with everything the course taught. A person who missed a class has not finished, and meets the same decision as if there had been no course: no certificate, and nothing an employer will take their word for. That a course counts only when it is finished is this page&rsquo;s supposition about courses that end in a certificate. It is not part of the book&rsquo;s model, in which every class attended adds something. The same ten thousand people, with the same luck, are shown under every schedule, so the difference between two pictures is the schedule and nothing else. Counts of people come from the simulation. The two rulers are computed exactly for the whole group.</p>
+          <p><b>Three days in a row, ten thousand people.</b> Each person needs three whole days, three months ahead, and each day holds on its own chance.</p>
+          <p><b>Seattle&rsquo;s law.</b> The Secure Scheduling Ordinance, as Seattle&rsquo;s Office of Labor Standards states it: for a change made less than fourteen days before the shift, one hour of pay when hours are added or the time is moved with no loss of hours, and half of the hours not worked when hours are cut. It covers retail and food-service chains with five hundred or more employees. It does not pay for a change the worker requested in writing or a swap between workers.</p>
+        </details>
+        <p style="margin-top:.9rem">From <cite>The Price of Agency</cite> by Aaron Alai, with Claude (Anthropic) as mathematical collaborator. This page is a single file with no dependencies. Read its source, keep a copy, change it.</p>
+        <p>The book, and everything behind this page: github.com/RandomInternetPreson/price-of-agency &middot; doi:10.5281/zenodo.24599088. &copy; 2026 Aaron Alai. The words on this page may be copied and built on with credit (Creative Commons Attribution 4.0 International). Its script may be used for anything (MIT).</p>
+      </footer>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var KEY = 'price-of-agency-eraser-v2';
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ============================================================== the book's model, exact (twin of code/calculator_model.py)
+  var NOPT = 4, SW = 0.5, GS = 0.35, LOG2N = 2;
+  var FACT = [1]; for (var i = 1; i <= 80; i++) FACT[i] = FACT[i - 1] * i;
+  function compositions(t) { var out = []; for (var a = 0; a <= t; a++) for (var b = 0; a + b <= t; b++) for (var c = 0; a + b + c <= t; c++) out.push([a, b, c, t - a - b - c]); return out; }
+  var jcache = {};
+  function joint(t, kappa, gs) {                  // J[f*16 + e*4 + a]: future, situation, action after t classes attended; gs = what one class teaches
+    if (gs == null) gs = GS;
+    var key = t + '|' + kappa + '|' + gs; if (jcache[key]) return jcache[key];
+    var J = new Float64Array(64), comps = compositions(t), pEd = (1 - SW) + SW / NOPT, pEo = SW / NOPT, pGd = gs + (1 - gs) / NOPT, pGo = (1 - gs) / NOPT;
+    for (var e = 0; e < NOPT; e++) for (var k = 0; k < comps.length; k++) {
+      var c = comps[k], like = [0, 0, 0, 0], sum = 0, f, x;
+      for (f = 0; f < NOPT; f++) { var v = (f === e ? pEd : pEo) / NOPT; for (x = 0; x < NOPT; x++) v *= Math.pow(x === f ? pGd : pGo, c[x]); like[f] = v; sum += v; }
+      var alt = -1; for (x = 0; x < NOPT; x++) if (x !== e && (alt < 0 || like[x] > like[alt])) alt = x;
+      var a = kappa * (1 - like[alt] / sum) < (1 - like[e] / sum) ? alt : e;
+      var mult = FACT[t] / (FACT[c[0]] * FACT[c[1]] * FACT[c[2]] * FACT[c[3]]);
+      for (f = 0; f < NOPT; f++) J[f * 16 + e * 4 + a] += mult * like[f];
+    }
+    return (jcache[key] = J);
+  }
+  function H(p) { var h = 0; for (var i = 0; i < p.length; i++) if (p[i] > 1e-15) h -= p[i] * Math.log2(p[i]); return h; }
+  function rulers(J, kappa) {
+    var pea = new Float64Array(16), pfa = new Float64Array(16), pe = [0, 0, 0, 0], pf = [0, 0, 0, 0], pa = [0, 0, 0, 0], right = 0, own = 0, loss = 0;
+    for (var f = 0; f < 4; f++) for (var e = 0; e < 4; e++) for (var a = 0; a < 4; a++) {
+      var v = J[f * 16 + e * 4 + a]; pea[e * 4 + a] += v; pfa[f * 4 + a] += v; pe[e] += v; pf[f] += v; pa[a] += v;
+      if (a === f) right += v; else loss += v * (a === e ? 1 : kappa); if (a !== e) own += v;
+    }
+    return { independence: (H(pea) - H(pe)) / LOG2N, aim: (H(pf) + H(pa) - H(pfa)) / LOG2N, right: right, own: own, loss: loss };
+  }
+  var gcache = {};
+  function gate(kappa, gs) { if (gs == null) gs = GS; var key = kappa + '|' + gs; if (gcache[key] != null) return gcache[key]; for (var t = 0; t <= 30; t++) if (rulers(joint(t, kappa, gs), kappa).own > 1e-12) return (gcache[key] = t); return (gcache[key] = 31); }
+  function attended(ps) {                         // chance of attending exactly k classes when class j is attended with chance ps[j]
+    var d = [1]; for (var j = 0; j < ps.length; j++) { var nx = new Array(d.length + 1).fill(0); for (var k = 0; k < d.length; k++) { nx[k] += d[k] * (1 - ps[j]); nx[k + 1] += d[k] * ps[j]; } d = nx; } return d;
+  }
+  function cohortExact(T, ps, kappa, gs) {        // ps: one chance for every class, or a list with one chance per class. The course counts only when finished
+    if (typeof ps === 'number') { var one = ps; ps = []; for (var q = 0; q < T; q++) ps.push(one); }
+    var all = attended(ps)[T], J = new Float64Array(64), JT = joint(T, kappa, gs), J0 = joint(0, kappa, gs);
+    for (var i = 0; i < 64; i++) J[i] = all * JT[i] + (1 - all) * J0[i];
+    var r = rulers(J, kappa); r.past = all; return r;
+  }
+  function tries(p) { return p >= 1 - 1e-12 ? 1 : p <= 0 ? null : Math.ceil(Math.log(0.1) / Math.log(1 - p) - 1e-9); }   // starts needed to finish once, nine times in ten
+
+  // ============================================================== how often a plan holds
+  function hold(h, A, whole) {                    // A: {know, chg (0..1), warn (days), days, len, floor (notice kept, days), fixed}
+    if (h <= 0) return 1;
+    if (A.fixed) return 1;                        // the same hours every week, known for as long as the job is held
+    var f = A.floor || 0, w = Math.max(A.warn, 0.25), know = Math.max(A.know, f);
+    var blind = h > know ? Math.min(1, (A.days / 7) * (whole ? 1 : Math.min(1, (A.len + 2) / 16))) : 0;   // whole: the plan needs the whole day
+    var late = h <= f ? 0 : Math.exp(-f / w) - Math.exp(-h / w);                                          // share of changes with warning between the kept notice and h
+    return (1 - blind) * (1 - A.chg * late);
+  }
+  function classChances(A, T) { var ps = []; for (var j = 1; j <= T; j++) ps.push(hold(7 * j, A)); return ps; }      // class j of a weekly course is a plan made j weeks ahead
+
+  // ============================================================== the ten thousand (the same people under every schedule)
+  var NP = 10000, MAXS = 10, WEEKS = 52, U = new Float32Array(NP * MAXS), U2 = new Float32Array(NP), U3 = new Float32Array(NP), UY = new Float32Array(NP * WEEKS);
+  (function () { var a = 20261125; function r() { a |= 0; a = a + 0x6D2B79F5 | 0; var t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+    for (var i = 0; i < U.length; i++) U[i] = r(); for (i = 0; i < NP; i++) { U2[i] = r(); U3[i] = r(); } for (i = 0; i < UY.length; i++) UY[i] = r(); })();
+  function simulate(T, ps, kappa, gs) {
+    var g = gate(kappa, gs), hist = new Array(T + 1).fill(0), past = 0, some = 0, own = 0, land = 0, rT = rulers(joint(T, kappa, gs), kappa), r0 = rulers(joint(0, kappa, gs), kappa);
+    for (var i = 0; i < NP; i++) {
+      var n = 0; for (var j = 0; j < T; j++) if (U[i * MAXS + j] < ps[j]) n++;
+      hist[n]++; var fin = n === T, r = fin ? rT : r0; if (fin) past++; else if (n > 0) some++; if (U2[i] < r.own) own++; if (U3[i] < r.right) land++;
+    }
+    return { hist: hist, past: past, some: some, none: NP - past - some, own: own, land: land, gate: g };
+  }
+  function simulateTrip(pd) {                     // three whole days in a row, each holding on its own chance
+    var all = 0, two = 0, less = 0;
+    for (var i = 0; i < NP; i++) { var n = 0; for (var j = 0; j < 3; j++) if (UY[i * WEEKS + j] < pd) n++; if (n === 3) all++; else if (n === 2) two++; else less++; }
+    return { all: all, two: two, less: less };
+  }
+  function simulateYear(p) {                      // one plan a week for a year
+    var most = 0, half = 0, less = 0;
+    for (var i = 0; i < NP; i++) { var n = 0; for (var j = 0; j < WEEKS; j++) if (UY[i * WEEKS + j] < p) n++; if (n >= 39) most++; else if (n >= 26) half++; else less++; }
+    return { most: most, half: half, less: less };
+  }
+
+  // ============================================================== answers, schedules
+  var ans = { know: 3, chg: 4, warn: 1, days: 4, len: 7, pay: '', kappa: 10, sess: 6, lead: 7, left: 1 }, shifts = [], scen = 'asis';
+  var WARN = { '0.25': 'the same day', '1': 'a day&rsquo;s warning', '2.5': 'two or three days&rsquo; warning', '7': 'about a week&rsquo;s warning', '14': 'two weeks&rsquo; warning or more' };
+  function base() { return { know: ans.know, chg: ans.chg / 10, warn: ans.warn, days: ans.days, len: ans.len, floor: 0 }; }
+  function withFloor(n) { var o = base(); o.floor = n; return o; }
+  function fixedHours() { var o = base(); o.fixed = true; return o; }
+  function schedules() {
+    var T = ans.sess, k = ans.kappa, gs = GS * ans.left, tired = ans.left < 1;
+    function mk(id, name, sub, A, T2, k2, gs2) { return { id: id, name: name, sub: sub, A: A, ps: classChances(A, T2), T: T2, kappa: k2, gs: gs2 }; }
+    var list = [mk('asis', 'As it is', '', base(), T, k, gs),
+      mk('n14', 'Two weeks&rsquo; notice, kept', 'you know your hours two weeks ahead and they are not changed after that. This is as far as Seattle&rsquo;s law goes', withFloor(14), T, k, gs),
+      mk('fixed', 'A fixed schedule', 'the same hours every week for the whole course, and not changed', fixedHours(), T, k, gs)];
+    if (k > 1) list.push(mk('budget', 'A cushion for mistakes', 'going your own way and being wrong no longer costs more than going along and being wrong. The book calls this a mistake budget', base(), T, 1, gs));
+    if (tired) list.push(mk('rest', 'Work that leaves you able to learn', 'you come to class with as much left as on a day off', base(), T, k, GS));
+    if (k > 1 || tired) list.push(mk('all', 'A fixed schedule' + (k > 1 && tired ? ', a cushion, and work that leaves you able to learn' : k > 1 ? ' and a cushion' : ' and work that leaves you able to learn'), '', fixedHours(), T, 1, GS));
+    list.forEach(function (s) { s.sim = simulate(s.T, s.ps, s.kappa, s.gs); s.exact = cohortExact(s.T, s.ps, s.kappa, s.gs); });
+    return list;
+  }
+
+  // ============================================================== drawing
+  function el(tag, attrs, kids) { var e = document.createElement(tag); attrs = attrs || {}; for (var k in attrs) { if (k === 'text') e.textContent = attrs[k]; else if (k === 'html') e.innerHTML = attrs[k]; else if (k === 'class') e.className = attrs[k]; else e.setAttribute(k, attrs[k]); } (kids || []).forEach(function (c) { e.appendChild(c); }); return e; }
+  function svgEl(tag, attrs, text) { var e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (var k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  function n0(x) { return Math.round(x).toLocaleString('en-US'); }
+  function per100(x) { return Math.round(x * 100); }
+  function plural(n, w) { return n + ' ' + w + (Number(n) === 1 ? '' : 's'); }
+  function ahead(n) { return n === 3 ? 'three days ahead' : n === 7 ? 'a week ahead' : n === 14 ? 'two weeks ahead' : n === 28 ? 'a month ahead' : n + ' days ahead'; }
+  function words(n) { return ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'][n] || String(n); }
+  function classes(n) { return n === 1 ? '1 class' : n + ' classes'; }
+  var BLUE = '#2a78d6', GREY = '#a9b4c2', PALE = '#e1e0dc';
+
+  function drawField(s) {
+    var c = $('field'), ctx = c.getContext('2d'), sim = s.sim, g = sim.gate, order = [sim.past, sim.some, sim.none], colors = [BLUE, GREY, PALE];
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 400, 400);
+    var i = 0; for (var cls = 0; cls < 3; cls++) { ctx.fillStyle = colors[cls]; for (var n = 0; n < order[cls]; n++, i++) ctx.fillRect((i % 100) * 4 + 0.5, Math.floor(i / 100) * 4 + 0.5, 3, 3); }
+    var few = s.T <= 2 ? 'attended 1 class' : 'attended 1 to ' + (s.T - 1) + ' classes';
+    c.setAttribute('aria-label', 'Ten thousand simulated people. ' + n0(sim.past) + ' finished the course, ' + n0(sim.some) + ' attended some classes and missed at least one, ' + n0(sim.none) + ' attended none.');
+    var L = $('legend'); L.textContent = '';
+    [[BLUE, sim.past, 'attended all ' + s.T + ' classes and finished the course' + (g > s.T ? '. On these answers even that is not enough learning to change what they do' : '')], [GREY, sim.some, few + ' and missed the rest. No certificate, and nothing to show for the classes they sat through'], [PALE, sim.none, 'attended no class at all']].forEach(function (r) {
+      L.appendChild(el('li', {}, [el('span', { class: 'sw', style: 'background:' + r[0] }), el('span', { class: 'n', text: n0(r[1]) }), el('span', { text: r[2] })]));
+    });
+    var W = 320, rowH = 20, left = 34, T = s.T, max = Math.max.apply(null, sim.hist), Hh = (T + 1) * rowH + 34;
+    var v = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + Hh, width: W, role: 'img', 'aria-label': 'How many people attended each number of classes' });
+    v.appendChild(svgEl('text', { x: 0, y: 11, 'font-size': 11.5, fill: '#5b5b57' }, 'Classes attended, out of ' + T + ', and how many people'));
+    for (var k = T; k >= 0; k--) {
+      var y = 22 + (T - k) * rowH, w = (W - left - 150) * sim.hist[k] / max;
+      v.appendChild(svgEl('text', { x: left - 10, y: y + 13, 'text-anchor': 'end', 'font-size': 12, fill: '#1a1a1a' }, String(k)));
+      if (sim.hist[k]) v.appendChild(svgEl('rect', { x: left, y: y + 3, width: Math.max(w, 1.5), height: rowH - 6, rx: 2, fill: k === T ? BLUE : (k > 0 ? GREY : PALE) }));
+      v.appendChild(svgEl('text', { x: left + Math.max(w, 1.5) + 6, y: y + 13, 'font-size': 11.5, fill: '#5b5b57' }, n0(sim.hist[k])));
+      if (k === T) { v.appendChild(svgEl('line', { x1: 0, x2: W, y1: y + rowH, y2: y + rowH, stroke: '#1a1a1a', 'stroke-width': 1, 'stroke-dasharray': '3 3' })); v.appendChild(svgEl('text', { x: W, y: y + rowH - 5, 'text-anchor': 'end', 'font-size': 11, fill: '#1a1a1a' }, 'all ' + T + ' are needed')); }
+    }
+    var B = $('bars'); B.textContent = ''; B.appendChild(v);
+  }
+
+  function drawHold() {
+    var W = 560, Hh = 236, L = 52, R = 172, T = 16, B = 42, pw = W - L - R, ph = Hh - T - B, A = base(), F = withFloor(14);
+    var x = function (d) { return L + pw * d / 28; }, y = function (v) { return T + ph * (1 - v); };
+    var s = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + Hh, width: W, role: 'img', 'aria-label': 'How often a plan holds, by how many days ahead it was made' });
+    [0, 0.25, 0.5, 0.75, 1].forEach(function (v) { s.appendChild(svgEl('line', { x1: L, x2: L + pw, y1: y(v), y2: y(v), stroke: '#e3e2de' })); s.appendChild(svgEl('text', { x: L - 8, y: y(v) + 4, 'text-anchor': 'end', 'font-size': 11.5, fill: '#5b5b57' }, Math.round(v * 100))); });
+    [0, 7, 14, 21, 28].forEach(function (d) { s.appendChild(svgEl('text', { x: x(d), y: Hh - B + 17, 'text-anchor': 'middle', 'font-size': 11.5, fill: '#5b5b57' }, d === 0 ? 'the same day' : d + ' days')); });
+    s.appendChild(svgEl('text', { x: L + pw / 2, y: Hh - 6, 'text-anchor': 'middle', 'font-size': 11.5, fill: '#5b5b57' }, 'How many days ahead the plan is made'));
+    s.appendChild(svgEl('text', { x: 9, y: T + ph / 2, 'font-size': 11, fill: '#5b5b57', transform: 'rotate(-90 9 ' + (T + ph / 2) + ')', 'text-anchor': 'middle' }, 'times in 100 you can be there'));
+    function curve(P, color, dash, label, dy) {
+      var pts = []; for (var d = 0; d <= 28; d += 0.25) pts.push(x(d) + ',' + y(hold(d, P)));
+      s.appendChild(svgEl('polyline', { points: pts.join(' '), fill: 'none', stroke: color, 'stroke-width': 2, 'stroke-dasharray': dash, 'stroke-linejoin': 'round' }));
+      s.appendChild(svgEl('text', { x: L + pw + 8, y: y(hold(28, P)) + 4 + dy, 'font-size': 11.5, fill: '#1a1a1a' }, label));
+    }
+    var close = Math.abs(hold(28, F) - hold(28, A)) < 0.08;
+    curve(F, '#5b5b57', '5 4', 'with two weeks’ notice, kept', close ? -9 : 0); curve(A, BLUE, '', 'your schedule as it is', close ? 9 : 0);
+    var h = ans.lead, p = hold(h, A);
+    s.appendChild(svgEl('line', { x1: x(h), x2: x(h), y1: y(0), y2: y(p), stroke: '#1a1a1a', 'stroke-width': 1 }));
+    s.appendChild(svgEl('circle', { cx: x(h), cy: y(p), r: 4.5, fill: BLUE, stroke: '#fff', 'stroke-width': 2 }));
+    s.appendChild(svgEl('text', { x: x(h) + (h > 20 ? -8 : 8), y: y(p) + (p < 0.14 ? -9 : 18), 'text-anchor': h > 20 ? 'end' : 'start', 'font-size': 12, 'font-weight': 600, fill: '#1a1a1a' }, 'your plan: ' + per100(p) + ' in 100'));
+    var C = $('holdchart'); C.textContent = ''; C.appendChild(s);
+  }
+
+  function drawTracks(legendId, boxId, legend, rows) {     // rows: {name, segs: [n, n, n], count}
+    var L = $(legendId); L.textContent = '';
+    legend.forEach(function (t, i) { L.appendChild(el('li', {}, [el('span', { class: 'sw', style: 'background:' + [BLUE, GREY, PALE][i] }), el('span', { text: t })])); });
+    var Y = $(boxId); Y.textContent = '';
+    rows.forEach(function (r) {
+      var t = el('div', { class: 'track', role: 'img', 'aria-label': r.name.replace(/&rsquo;/g, '’') + ': ' + r.count });
+      r.segs.forEach(function (v, i) { if (v > 0) t.appendChild(el('span', { style: 'flex:' + v + ' 1 0;background:' + [BLUE, GREY, PALE][i] })); });
+      Y.appendChild(el('div', { class: 'yr' }, [el('p', { class: 'name', html: r.name }), t, el('p', { class: 'count', text: r.count })]));
+    });
+  }
+
+  function drawPlane(list) {
+    var W = 560, Hh = 300, L = 50, R = 16, T = 14, B = 44, pw = W - L - R, ph = Hh - T - B, xm = 0.8, ym = 0.6;
+    var x = function (v) { return L + pw * v / xm; }, y = function (v) { return T + ph * (1 - v / ym); };
+    var s = svgEl('svg', { viewBox: '0 0 ' + W + ' ' + Hh, width: W, role: 'img', 'aria-label': 'Each schedule as a point: independence across, aim up' });
+    [0, 0.2, 0.4, 0.6].forEach(function (v) { s.appendChild(svgEl('line', { x1: L, x2: L + pw, y1: y(v), y2: y(v), stroke: '#e3e2de' })); s.appendChild(svgEl('text', { x: L - 8, y: y(v) + 4, 'text-anchor': 'end', 'font-size': 11.5, fill: '#5b5b57' }, v.toFixed(1))); });
+    [0, 0.2, 0.4, 0.6, 0.8].forEach(function (v) { s.appendChild(svgEl('text', { x: x(v), y: Hh - B + 17, 'text-anchor': 'middle', 'font-size': 11.5, fill: '#5b5b57' }, v.toFixed(1))); });
+    s.appendChild(svgEl('text', { x: L + pw / 2, y: Hh - 6, 'text-anchor': 'middle', 'font-size': 11.5, fill: '#5b5b57' }, 'Independence'));
+    s.appendChild(svgEl('text', { x: 12, y: T + ph / 2, 'text-anchor': 'middle', 'font-size': 11.5, fill: '#5b5b57', transform: 'rotate(-90 12 ' + (T + ph / 2) + ')' }, 'Aim'));
+    var now = list[0].exact;
+    list.slice(1).forEach(function (sc) { s.appendChild(svgEl('line', { x1: x(now.independence), y1: y(now.aim), x2: x(sc.exact.independence), y2: y(sc.exact.aim), stroke: GREY, 'stroke-width': 1.2 })); });
+    list.forEach(function (sc, i) {
+      var cx = x(sc.exact.independence), cy = y(sc.exact.aim);
+      s.appendChild(svgEl('circle', { cx: cx, cy: cy, r: 9.5, fill: i === 0 ? '#1a1a1a' : BLUE, stroke: '#fff', 'stroke-width': 2 }));
+      s.appendChild(svgEl('text', { x: cx, y: cy + 4, 'text-anchor': 'middle', 'font-size': 11, 'font-weight': 600, fill: '#fff' }, String(i + 1)));
+    });
+    var P = $('plane'); P.textContent = ''; P.appendChild(s);
+    var ol = el('ol', { class: 'plain small', style: 'margin-top:.5rem' });
+    list.forEach(function (sc) { ol.appendChild(el('li', { html: sc.name + ': independence ' + sc.exact.independence.toFixed(2) + ', aim ' + sc.exact.aim.toFixed(2) })); });
+    P.appendChild(ol);
+  }
+
+  function update() {
+    var list = schedules(), now = list[0], g = now.sim.gate, g0 = gate(1, GS), h = ans.lead, T = ans.sess, k = ans.kappa, p = hold(h, base());
+    function byId(id) { return list.filter(function (s) { return s.id === id; })[0]; }
+    function lower(t) { return t.charAt(0).toLowerCase() + t.slice(1); }
+    if (!byId(scen)) scen = 'asis';
+    var cur = byId(scen), nt = byId('n14'), fx = byId('fixed');
+    var pNotice = hold(h, withFloor(14)), taken = 100 - per100(p);
+
+    // ---- part one
+    var F = $('figs'); F.textContent = '';
+    function fig(n, l) { F.appendChild(el('div', {}, [el('div', { class: 'fig-n', html: n }), el('div', { class: 'fig-l', html: l })])); }
+    var need10 = p > 0 ? Math.ceil(10 / p - 1e-9) : null, kept52 = Math.round(52 * p);
+    fig(per100(p) + ' in 100', 'You plan something ' + ahead(h) + '. This is how often your schedule still lets you be there when the day comes.' + (taken > 0 ? ' The other ' + taken + ' times, work takes it.' : ''));
+    fig(kept52 + ' of 52', 'You plan one thing every week for a year: a family dinner, a game, a visit. This is how many of the 52 you are there for.');
+    fig(need10 == null || need10 > 200 ? 'Over 200 plans' : need10 + ' plans', need10 === 10 ? 'To be there 10 times, you make 10 plans. On this schedule a plan holds.' : need10 == null || need10 > 200 ? 'To be there 10 times, you would have to make more than 200 plans. Nearly all of them get taken.' : 'To be there 10 times, you have to make ' + need10 + ' plans. The other ' + (need10 - 10) + ' get taken.');
+
+    var month = Math.pow(p, 4), tax;
+    if (taken === 0) tax = 'On your answers, a plan made ' + ahead(h) + ' holds. You do not have to plan more than you get.';
+    else {
+      tax = 'On your answers, ' + taken + ' of every 100 plans made ' + ahead(h) + ' get taken by work, and nobody knows in advance which ones. So a person who wants to be there 10 times has to make about ' + (need10 > 200 ? 'more than 200' : need10) + ' plans and lose ' + (need10 > 200 ? 'nearly all' : (need10 - 10)) + ' of them. Each plan that is lost was an evening kept free, a ticket bought, a sitter arranged or a promise made, and then given up. This is what the book means by &ldquo;an hour is not an hour&rdquo; (Chapter&nbsp;7).';
+      tax += ' A month in which all four weekly plans hold comes ' + (month < 0.005 ? 'less than once in 100 months' : 'about ' + per100(month) + ' times in 100') + '.';
+    }
+    $('tax-say').innerHTML = tax;
+    drawHold();
+    $('hold-cap').innerHTML = 'How to read the chart. It is drawn from your answers to questions 1 to 5: how many days ahead you know your hours, how many shifts in ten get changed, how much warning you get, and how much you work. Find how many days ahead a plan is made along the bottom, then read up to the blue line to see how often you can still be there. The dashed line is the same job with two weeks&rsquo; notice, kept: hours known two weeks ahead, and not changed after that. It protects a plan made inside two weeks, and stops there.';
+
+    var R = $('reach'); R.textContent = '';
+    R.appendChild(el('caption', { text: 'Times in 100 that the schedule leaves the plan standing' }));
+    R.appendChild(el('tr', {}, [el('th', { text: 'The plan' }), el('th', { class: 'n', html: 'Your schedule<br>as it is' }), el('th', { class: 'n', html: 'Two weeks&rsquo;<br>notice, kept' }), el('th', { class: 'n', html: 'A fixed<br>schedule' })]));
+    [['Made a week ahead', 7, false, 1], ['Made two weeks ahead', 14, false, 1], ['Made three months ahead', 90, false, 1], ['Three days in a row, planned three months ahead<small>a trip, a wedding, the days around a birth</small>', 90, true, 3]].forEach(function (r) {
+      function v(A) { return String(per100(Math.pow(hold(r[1], A, r[2]), r[3]))); }
+      R.appendChild(el('tr', {}, [el('td', { html: r[0] }), el('td', { class: 'n', text: v(base()) }), el('td', { class: 'n', text: v(withFloor(14)) }), el('td', { class: 'n', text: v(fixedHours()) })]));
+    });
+    var n90 = per100(hold(90, withFloor(14))), n3 = per100(Math.pow(hold(90, withFloor(14), true), 3));
+    var rs = 'Two weeks&rsquo; notice protects a plan made inside two weeks. ';
+    if (n90 < 100) rs += 'For a plan made earlier than that it stops the late changes and nothing else. Of every 100 plans made three months ahead, ' + (100 - n90) + ' are still taken, because the hours for that day had not been given out when the plan was made. Three days in a row all stay free ' + n3 + ' times in 100. ';
+    rs += 'Much of what a family plans is made further ahead than two weeks: a trip, a wedding, a holiday, the weeks around a birth. And raising a child is not a plan with a date. It needs someone there most evenings, for years. Only the last column lets a person promise that.';
+    $('reach-say').innerHTML = rs;
+
+    $('yr-intro').innerHTML = 'Each of ten thousand people on your schedule plans one thing every week for a year, each ' + ahead(h) + '. The bars show how many of them manage to be there most weeks.';
+    function yrow(name, q) { var y = simulateYear(q); return { name: name, segs: [y.most, y.half, y.less], count: n0(y.most) + ' people are there three weeks out of four or better. ' + n0(y.half) + ' are there more than half the time. ' + n0(y.less) + ' are there less than half the time.' }; }
+    var yrows = [yrow('Your schedule as it is', p)], sameAsFixed = pNotice > 0.995;
+    if (!sameAsFixed) { yrows.push(yrow('The same job with two weeks&rsquo; notice, kept', pNotice)); yrows.push(yrow('The same job with a fixed schedule', 1)); }
+    drawTracks('yr-legend', 'yr', ['there for 39 or more of the 52: three weeks out of four, or better', 'there for 26 to 38: more than half', 'there for fewer than 26: less than half'], yrows);
+    $('yr-say').innerHTML = sameAsFixed ? 'Plans made ' + ahead(h) + ' are the one kind that two weeks&rsquo; notice protects in full, so for these plans it would do as much as a fixed schedule. That is the only place the two are equal. The next chart is a plan they do not treat alike.' : '';
+
+    function trow(name, A) { var t = simulateTrip(hold(90, A, true)); return { name: name, segs: [t.all, t.two, t.less], count: n0(t.all) + ' people get all three days. ' + n0(t.two) + ' lose one of them. ' + n0(t.less) + ' lose two or all three.', all: t.all }; }
+    var trows = [trow('Your schedule as it is', base()), trow('The same job with two weeks&rsquo; notice, kept', withFloor(14)), trow('The same job with a fixed schedule', fixedHours())];
+    drawTracks('trip-legend', 'trip', ['all three days stayed free', 'lost one of the three days', 'lost two or all three'], trows);
+    $('trip-say').innerHTML = trows[1].all > 9950 ? 'On your answers two weeks&rsquo; notice is enough for this plan too.' : 'Two weeks&rsquo; notice leaves ' + n0(NP - trows[1].all) + ' of the ten thousand without the three days they planned. The notice arrives two weeks before the trip, and the trip was planned three months before it. This count supposes the days cannot be had by asking for them. Where an employer gives days off when asked, and keeps to it, more people get them.';
+
+    // ---- part two
+    var intro = '<p>Part two is about learning: coming to know something your situation does not tell you. A course is the example here because its classes can be counted. An hour alone thinking a thing through teaches too, and so do years among the people you live with. The model does not ask where the learning came from, and part one has already counted whether those hours are still yours.</p><p>One class teaches a little, and a little is not enough to act on. In the book&rsquo;s model there is a point before which what you have learned changes nothing you do, and after which it starts to. The book calls that point the gate.</p>';
+    if (k > 1 || ans.left < 1) {
+      intro += '<p>How many classes it takes to get there depends on two of your answers. ';
+      if (k > 1) intro += 'In question 7 you said that going your own way and being wrong costs you ' + (k === 2 ? 'twice' : words(k) + ' times') + ' as much as going along and being wrong. So you have to be surer before you act on what you learned. ';
+      if (ans.left < 1) intro += 'In question 9 you said a shift leaves you ' + (ans.left === 0.5 ? 'about half as much' : 'very little') + ' for learning. So each class teaches you less. ';
+      intro += 'A person with ' + (k > 1 && ans.left < 1 ? 'neither problem' : 'no such problem') + ' would need ' + classes(g0) + '. On your answers it takes ' + g + '.</p>';
+    } else intro += '<p>On your answers to questions 7 and 9, it takes ' + classes(g) + ' to get there.</p>';
+    intro += '<p>There is a second line to cross, and it is not the book&rsquo;s. A course that is meant to change your work ends in a certificate, and the certificate goes to the people who attended every class. Someone who attended four classes of six learned something and has nothing to show an employer for it. A class taken for its own sake, woodworking or pottery, is worth whatever you attended. A course meant to get you out of a bind is not. So this page counts a person only if they attended all ' + T + ' classes.</p>';
+    intro += '<p>Each dot below is one of ten thousand people on your schedule who signs up for a course of ' + classes(T) + ', one class a week. A course sets its class times on the day you sign up. So the first class is a plan made a week ahead, and the last is a plan made ' + words(T) + ' weeks ahead.</p>';
+    if (g > T) intro += '<p>On your answers, finishing is still not enough. The course has ' + classes(T) + ', and it takes ' + g + ' before what a person learned changes what they do. A person can finish this course and go on doing exactly what they did before.</p>';
+    $('coh-intro').innerHTML = intro;
+    var S = $('scen'); S.textContent = '';
+    list.forEach(function (s) { var b = el('button', { type: 'button', 'aria-pressed': s.id === scen ? 'true' : 'false', html: s.name }); b.addEventListener('click', function () { scen = s.id; update(); }); S.appendChild(b); });
+    drawField(cur);
+    function chance(q) { return q >= 0.995 ? 'certain' : q >= 0.01 ? per100(q) + ' in 100' : q >= 0.001 ? Math.round(q * 1000) + ' in 1,000' : 'less than 1 in 1,000'; }
+    function starts(q) { var t = tries(q); return t == null || t > 1000 ? 'more than a thousand times' : t === 1 ? 'once' : n0(t) + ' times'; }
+    var pAll = now.exact.past, pAllN = nt.exact.past;
+    var cs = '<b>' + cur.name + '.</b> ' + n0(cur.sim.past) + ' of the ten thousand attend all ' + cur.T + ' classes and finish the course. ' + (cur.sim.some > 0 ? n0(cur.sim.some) + ' attend at least one class, miss at least one, and end with nothing to show for it.' : 'Nobody who starts the course fails to finish it.') + (cur.id !== 'asis' ? ' On the job as it is, ' + n0(now.sim.past) + ' finish.' : '');
+    if (cur.id === 'asis' && pAll < 0.995) cs += ' One person&rsquo;s chance of finishing is ' + chance(pAll) + '. To be nearly sure of finishing once (nine times in ten), that person would have to start the course ' + starts(pAll) + '.' + (pAllN > pAll + 0.005 ? ' With two weeks&rsquo; notice, kept: ' + starts(pAllN) + '. With a fixed schedule: once.' : ' With a fixed schedule: once.');
+    $('coh-say').innerHTML = cs;
+
+    var tb = $('levers'); tb.textContent = '';
+    tb.appendChild(el('caption', { text: 'Out of the ten thousand people who sign up for the course' }));
+    tb.appendChild(el('tr', {}, [el('th', { text: 'The job' }), el('th', { class: 'n', html: 'Finished<br>the course' }), el('th', { class: 'n', html: 'Then went<br>their own way' }), el('th', { class: 'n', html: 'Got the<br>decision right' })]));
+    var rest = list.slice(1).sort(function (a, b) { return (b.sim.past - a.sim.past) || (b.sim.land - a.sim.land); });
+    [now].concat(rest).forEach(function (s) {
+      tb.appendChild(el('tr', { class: s.id === 'asis' ? 'now' : '' }, [el('td', { html: s.name + (s.sub ? '<small>' + s.sub + '</small>' : '') }), el('td', { class: 'n', text: n0(s.sim.past) }), el('td', { class: 'n', text: n0(s.sim.own) }), el('td', { class: 'n', text: n0(s.sim.land) })]));
+    });
+    var A0 = now.sim.past, al = byId('all'), baseLand = 0; for (var bi = 0; bi < NP; bi++) if (U3[bi] < 0.625) baseLand++;
+    var say = '<p><b>How to read the table.</b> Finishing means attending every class. After the course, each person faces one decision in which what they learned may point a different way from what the situation in front of them calls for. Only a person who finished can act on what they learned. Everyone else does what the situation calls for, as before. The middle column counts the people who then do something other than what the situation calls for. The last column counts the people who get that decision right. A person who took no course and simply did what the situation called for is right 625 times in 1,000 on average. Among these ten thousand that comes to ' + n0(baseLand) + ', so that is where the last column starts.</p><p>';
+    say += 'On your answers, ' + n0(A0) + ' of the ten thousand finish the course. With two weeks&rsquo; notice, kept, ' + n0(nt.sim.past) + ' finish. With a fixed schedule, ' + n0(fx.sim.past) + ' do.';
+    if (fx.sim.past - nt.sim.past > 150) say += nt.sim.past - A0 < 150 && ans.know >= 14 ? ' You already know your hours two weeks ahead or more, so a two-week rule adds nothing for you. A fixed schedule covers every class of a course. What you have now covers only the first ones.' : ' Two weeks&rsquo; notice covers the first two classes of a course. A fixed schedule covers all of them. That is the difference between those two rows.';
+    else if (fx.sim.past - A0 < 150) say += ' On your answers the schedule is not what stops people finishing.';
+    say += '</p><p>';
+    if (g > T) say += 'And finishing is not enough on your answers. The course has ' + classes(T) + ', and it takes ' + g + ' before what a person learned changes what they do (questions 7 and 9). So on a fixed schedule everyone finishes and nobody&rsquo;s decision changes.' + (al ? ' With ' + lower(al.name) + ', ' + n0(al.sim.own) + ' go their own way and ' + n0(al.sim.land) + ' get the decision right.' : '');
+    else say += 'Finishing is not the end of it. Of the ' + n0(fx.sim.past) + ' who finish on a fixed schedule, ' + n0(fx.sim.own) + ' go their own way afterwards.' + (al ? ' With ' + lower(al.name) + ', ' + n0(al.sim.own) + ' do.' : '');
+    $('lev-say').innerHTML = say + '</p>';
+    drawPlane(list);
+
+    // ---- Seattle's law
+    var perMonth = (ans.chg / 10) * ans.days * 4, under14 = perMonth * (1 - Math.exp(-14 / Math.max(ans.warn, 0.25))), lo = under14 * 1, hi = under14 * Math.max(1, ans.len / 2), pay = parseFloat(ans.pay);
+    var se = 'Seattle&rsquo;s law makes large retail and food chains tell workers their hours two weeks ahead, and pay when they change them later: one extra hour of pay when hours are added or moved, and half pay for the hours that are cut. ';
+    if (under14 < 0.5) se += 'On your answers almost no change comes with less than two weeks&rsquo; warning, so that law would add nothing.';
+    else se += 'On your answers, about ' + Math.round(under14) + ' ' + (Math.round(under14) === 1 ? 'change' : 'changes') + ' every four weeks come with less than two weeks&rsquo; warning. Under Seattle&rsquo;s law those would come with between ' + Math.round(lo) + ' and ' + Math.round(hi) + ' extra hours of pay every four weeks' + (pay > 0 ? ', which is $' + n0(lo * pay) + ' to $' + n0(hi * pay) : '') + '. It is the lower number if every change was a moved shift or added hours, and the higher number if every change was a canceled shift.';
+    se += ' That law does not pay for a change the worker asked for in writing, or for a swap between workers. Other cities, and the state of Oregon, have laws like it. They ask for two weeks as well, or less. A city or state labor office can say whether one covers your job. Two weeks is where these laws stop. The table in part one shows what that leaves uncovered.';
+    $('seattle').innerHTML = se;
+
+    // ---- the paragraph
+    var para = 'My hours are known ' + (ans.know === 0 ? 'on the day' : plural(ans.know, 'day') + ' ahead') + '. ' + (ans.chg === 0 ? 'My shifts are not changed after I am told them' : 'About ' + words(ans.chg) + ' in ten of my shifts are changed after I am told them, by a decision that is not freely mine, usually ' + (ans.warn === 0.25 ? 'on the same day' : 'on ' + WARN[String(ans.warn)])) + '. Something I plan ' + ahead(h) + ', I can still be there for ' + per100(p) + ' times in 100. If I plan one thing every week for a year, I am there for ' + kept52 + ' of the 52. ';
+    if (ans.left < 1) para += 'A shift leaves me ' + (ans.left === 0.5 ? 'about half as much' : 'very little') + ' for learning. ';
+    para += 'A course of ' + words(T) + ' weekly classes gives its certificate for attending all ' + words(T) + '. ' + (pAll >= 0.995 ? 'On my schedule I can count on finishing it. ' : 'My chance of finishing it is ' + chance(pAll) + '. ');
+    para += 'In the model of <i>The Price of Agency</i>, of 10,000 people on this job who sign up for it, ' + n0(now.sim.past) + ' finish. With two weeks&rsquo; notice, kept, ' + n0(nt.sim.past) + ' finish. With a fixed schedule, ' + n0(fx.sim.past) + ' do. Those counts suppose that every one of them can pay for the course and chose the right one.';
+    $('para').innerHTML = para;
+    remember();
+  }
+
+  // ============================================================== the answers
+  function bind() {
+    function num(id, key, lo, hi, isInt) { var e = $(id); e.value = ans[key]; e.addEventListener('input', function () { var v = parseFloat(e.value); if (isNaN(v)) return; v = Math.min(hi, Math.max(lo, v)); ans[key] = isInt ? Math.round(v) : v; outs(); update(); }); }
+    num('q-know', 'know', 0, 28, true); num('q-chg', 'chg', 0, 10, true); num('q-days', 'days', 1, 7, true); num('q-len', 'len', 1, 16, false); num('q-sess', 'sess', 2, 8, true);
+    ['q-warn', 'q-kappa', 'q-lead', 'q-left'].forEach(function (id) { var key = id.slice(2), e = $(id); e.value = String(ans[key]); e.addEventListener('change', function () { ans[key] = parseFloat(e.value); update(); }); });
+    $('q-pay').value = ans.pay; $('q-pay').addEventListener('input', function () { ans.pay = $('q-pay').value; update(); });
+  }
+  function outs() { $('o-know').textContent = ans.know === 0 ? 'On the day' : plural(ans.know, 'day') + ' ahead'; $('o-chg').textContent = ans.chg + ' in ten'; }
+  function setAnswers(a) {
+    ['know', 'chg', 'warn', 'days', 'len', 'kappa', 'sess', 'lead', 'left'].forEach(function (k) { var v = parseFloat(a && a[k]); if (!isNaN(v)) ans[k] = v; });
+    ans.know = Math.min(28, Math.max(0, Math.round(ans.know))); ans.chg = Math.min(10, Math.max(0, Math.round(ans.chg))); ans.days = Math.min(7, Math.max(1, Math.round(ans.days))); ans.len = Math.min(16, Math.max(1, ans.len)); ans.sess = Math.min(8, Math.max(2, Math.round(ans.sess)));
+    if ([0.25, 1, 2.5, 7, 14].indexOf(ans.warn) < 0) ans.warn = 1; if ([1, 2, 5, 10].indexOf(ans.kappa) < 0) ans.kappa = 10; if ([3, 7, 14, 28].indexOf(ans.lead) < 0) ans.lead = 7; if ([1, 0.5, 0.25].indexOf(ans.left) < 0) ans.left = 1;
+    if (a && (typeof a.pay === 'string' || typeof a.pay === 'number') && String(a.pay).length < 12) ans.pay = String(a.pay);
+    $('q-know').value = ans.know; $('q-chg').value = ans.chg; $('q-days').value = ans.days; $('q-len').value = ans.len; $('q-sess').value = ans.sess; $('q-warn').value = String(ans.warn); $('q-kappa').value = String(ans.kappa); $('q-lead').value = String(ans.lead); $('q-left').value = String(ans.left); $('q-pay').value = ans.pay; outs();
+  }
+
+  // ============================================================== the shift log (optional): answers questions 1 to 5
+  var WHAT = [['none', 'Worked as I was told'], ['moved', 'Moved to another time'], ['short', 'Cut short'], ['long', 'Made longer'], ['cancel', 'Canceled']], box = $('shifts');
+  function day(s) { if (!s) return null; var p = s.split('-'); if (p.length !== 3) return null; var t = Date.UTC(+p[0], +p[1] - 1, +p[2]); return isNaN(t) ? null : t / 86400000; }
+  function iso(d) { return new Date(d * 86400000).toISOString().slice(0, 10); }
+  function hours(a, b) { if (!a || !b) return null; var x = a.split(':'), y = b.split(':'); var h = (+y[0] + +y[1] / 60) - (+x[0] + +x[1] / 60); if (h <= 0) h += 24; return h; }
+  function median(v) { if (!v.length) return null; var s = v.slice().sort(function (a, b) { return a - b; }), m = Math.floor(s.length / 2); return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
+  function blank(d) { return { date: d || '', start: '', end: '', told: '', what: 'none', changed: '', free: false }; }
+  function read(s) {
+    var d = day(s.date), told = day(s.told), h = hours(s.start, s.end);
+    if (d == null || told == null || h == null) return { ok: false, why: (s.date || s.start || s.end || s.told) ? 'This row needs a date, a start time, an end time and the day you were told.' : '' };
+    if (told > d) return { ok: false, why: 'The day you were told is after the shift itself. Check the dates.' };
+    var ch = s.what !== 'none', c = day(s.changed);
+    if (ch && c == null) return { ok: false, why: 'Add the day you were told about the change.' };
+    if (ch && c > d) return { ok: false, why: 'The day you were told about the change is after the shift. Check the dates.' };
+    return { ok: true, day: d, posted: h, notice: d - told, taken: ch && !s.free, warning: ch ? d - c : null };
+  }
+  function drawShifts() {
+    box.textContent = '';
+    shifts.forEach(function (s, k) {
+      var row = el('div', { class: 'shift', role: 'group', 'aria-label': 'Shift ' + (k + 1) });
+      function inp(type, key) { var i = el('input', { type: type }); i.value = s[key]; i.addEventListener('input', function () { s[key] = i.value; show(); remember(); }); return i; }
+      function field(cls, label, input) { var l = el('label', { class: 'f ' + cls }); l.appendChild(document.createTextNode(label)); l.appendChild(input); return l; }
+      var sel = el('select'); WHAT.forEach(function (w) { var o = el('option', { value: w[0], text: w[1] }); if (s.what === w[0]) o.selected = true; sel.appendChild(o); });
+      var when = field('c-3', 'Told about the change on', inp('date', 'changed'));
+      var free = el('label', { class: 'check c-all' }); var cb = el('input', { type: 'checkbox' }); cb.checked = !!s.free; cb.addEventListener('change', function () { s.free = cb.checked; remember(); }); free.appendChild(cb); free.appendChild(document.createTextNode(' This change was freely mine: I wanted it and could have left things as they were'));
+      var msg = el('div', { class: 'c-msg', role: 'alert' });
+      var del = el('button', { type: 'button', class: 'quiet c-x', 'aria-label': 'Remove shift ' + (k + 1), text: 'Remove' }); del.addEventListener('click', function () { shifts.splice(k, 1); drawShifts(); remember(); });
+      function show() { var ch = s.what !== 'none'; when.classList.toggle('hide', !ch); free.classList.toggle('hide', !ch); var r = read(s); msg.textContent = r.ok ? '' : r.why; msg.classList.toggle('hide', r.ok || !r.why); row.classList.toggle('bad', !r.ok && !!r.why); }
+      sel.addEventListener('change', function () { s.what = sel.value; show(); remember(); });
+      row.appendChild(field('c-3', 'Day of the shift', inp('date', 'date'))); row.appendChild(field('c-3', 'Starts', inp('time', 'start'))); row.appendChild(field('c-3', 'Ends', inp('time', 'end'))); row.appendChild(field('c-3', 'You were told on', inp('date', 'told')));
+      row.appendChild(field('c-5', 'What happened to it', sel)); row.appendChild(when); row.appendChild(del); row.appendChild(free); row.appendChild(msg);
+      box.appendChild(row); show();
+    });
+    if (!shifts.length) box.appendChild(el('p', { class: 'help', text: 'No shifts entered.' }));
+  }
+  function say(t) { $('status').textContent = t; }
+  $('add').addEventListener('click', function () { var last = shifts[shifts.length - 1], s = blank(); if (last) { s.start = last.start; s.end = last.end; } shifts.push(s); drawShifts(); remember(); var rows = box.querySelectorAll('.shift'); rows[rows.length - 1].querySelector('input').focus(); });
+  $('copyweek').addEventListener('click', function () {
+    var ds = shifts.map(function (s) { return day(s.date); }).filter(function (d) { return d != null; }); if (!ds.length) { say('Enter one week first.'); return; }
+    var last = Math.max.apply(null, ds), monday = last - ((new Date(last * 86400000).getUTCDay() + 6) % 7), added = 0;
+    shifts.slice().forEach(function (s) { var d = day(s.date); if (d != null && d >= monday && d < monday + 7) { var c = blank(iso(d + 7)); c.start = s.start; c.end = s.end; var t = day(s.told); if (t != null) c.told = iso(t + 7); shifts.push(c); added++; } });
+    drawShifts(); remember(); say(plural(added, 'shift') + ' added for the following week, each told a week later. Change whatever was different.');
+  });
+  $('clearshifts').addEventListener('click', function () { shifts = []; drawShifts(); remember(); say('The shifts are removed. Your answers are unchanged.'); });
+  $('fill').addEventListener('click', function () {
+    var rows = shifts.map(read).filter(function (r) { return r.ok; }); if (rows.length < 3) { say('Enter at least three complete shifts first.'); return; }
+    var first = Math.min.apply(null, rows.map(function (r) { return r.day; })), last = Math.max.apply(null, rows.map(function (r) { return r.day; })), weeks = Math.max(1, (last - first + 1) / 7);
+    var taken = rows.filter(function (r) { return r.taken; }), w = median(taken.map(function (r) { return r.warning; }));
+    var a = { know: median(rows.map(function (r) { return r.notice; })), chg: 10 * taken.length / rows.length, days: rows.length / weeks, len: Math.round(2 * median(rows.map(function (r) { return r.posted; }))) / 2 };
+    if (w != null) a.warn = w < 0.5 ? 0.25 : w < 1.75 ? 1 : w < 5 ? 2.5 : w < 10.5 ? 7 : 14;
+    setAnswers(a); update(); say('Questions 1 to 5 are now answered from your ' + rows.length + ' shifts. ' + taken.length + (taken.length === 1 ? ' was' : ' were') + ' changed by a decision that was not freely yours.');
+  });
+
+  // ============================================================== keeping the answers (only ever on this device)
+  function remember() { try { if ($('remember').checked) localStorage.setItem(KEY, JSON.stringify({ answers: ans, shifts: shifts })); } catch (e) { /* storage is a convenience; the page works without it */ } }
+  function cleanShifts(list) {
+    return (Array.isArray(list) ? list : []).slice(0, 2000).map(function (s) {
+      var o = blank(); ['date', 'start', 'end', 'told', 'what', 'changed'].forEach(function (k) { if (s && typeof s[k] === 'string' && s[k].length < 20) o[k] = s[k]; });
+      o.free = !!(s && s.free === true); if (!WHAT.some(function (w) { return w[0] === o.what; })) o.what = 'none'; return o;
+    });
+  }
+  function restore(j) { setAnswers(j && j.answers); shifts = cleanShifts(j && j.shifts); drawShifts(); update(); }
+  $('save').addEventListener('click', function () {
+    var blob = new Blob([JSON.stringify({ made_by: 'The Price of Agency, eraser calculator', answers: ans, shifts: shifts }, null, 1)], { type: 'application/json' });
+    var a = el('a', { href: URL.createObjectURL(blob), download: 'my-schedule.json' }); document.body.appendChild(a); a.click(); a.remove(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    say('Saved to your device as my-schedule.json. It went nowhere else.');
+  });
+  $('load').addEventListener('click', function () { $('file').click(); });
+  $('file').addEventListener('change', function () {
+    var f = $('file').files[0]; if (!f) return; var rd = new FileReader();
+    rd.onload = function () { try { restore(JSON.parse(rd.result)); say('Opened ' + f.name + '.'); } catch (e) { say('That file could not be read. Choose a file this page saved.'); } };
+    rd.readAsText(f); $('file').value = '';
+  });
+  $('remember').addEventListener('change', function () { try { if ($('remember').checked) { remember(); say('Your answers will be kept in this browser, on this device only.'); } else { localStorage.removeItem(KEY); say('Nothing is kept in this browser.'); } } catch (e) { say('This browser will not store answers. Use the button that saves to a file.'); } });
+  $('print').addEventListener('click', function () { window.print(); });
+  $('copy').addEventListener('click', function () {
+    var t = $('para').textContent, ta = el('textarea'); ta.value = t; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} ta.remove(); say(ok ? 'Copied.' : 'This browser would not copy it. Select the paragraph and copy it by hand.');
+  });
+
+  window.__eraser = { joint: joint, rulers: rulers, gate: gate, cohortExact: cohortExact, hold: hold, tries: tries, classChances: classChances, attended: attended };   // for checking against code/calculator_model.py
+  bind();
+  try { var kept = localStorage.getItem(KEY); if (kept) { $('remember').checked = true; restore(JSON.parse(kept)); } else { setAnswers(null); drawShifts(); update(); } } catch (e) { setAnswers(null); drawShifts(); update(); }
+})();
+</script>
+</body>
+</html>

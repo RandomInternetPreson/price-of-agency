@@ -1,0 +1,20 @@
+% Chapter 11, the story: nine boats and four grounds, on one day. A drawing, not data.
+\begin{tikzpicture}[x=1cm,y=1cm,lab/.style={font=\sffamily\fontsize{7.6}{9.6}\selectfont,inner sep=1.5pt}]
+  \newcommand{\boat}[2]{\fill[ink] ($(#1,#2)+(-0.13,0)$) -- ($(#1,#2)+(0.13,0)$) -- ($(#1,#2)+(0.08,-0.09)$) -- ($(#1,#2)+(-0.08,-0.09)$) -- cycle;
+     \fill[ink] ($(#1,#2)+(-0.01,0.03)$) -- ($(#1,#2)+(-0.01,0.21)$) -- ($(#1,#2)+(0.11,0.03)$) -- cycle;}
+  \newcommand{\grounds}{%
+     \foreach \k in {0,1,2,3}{\fill[water] (\k*1.3+0.62,1.0) circle (0.6);}
+     \fill[sblue,opacity=0.28] (1*1.3+0.62,1.0) circle (0.6); \node[lab,text=muted,anchor=north] at (1*1.3+0.62,0.38) {the fish};}
+  \begin{scope}[xshift=0.15cm]
+    \grounds
+    \boat{0.62}{1.0}
+    \foreach \x/\y in {1.62/1.2,1.92/1.2,2.22/1.2,1.62/0.84,1.92/0.84,2.22/0.84}{\boat{\x}{\y}}
+    \boat{3.22}{1.0}\boat{4.52}{1.0}
+    \node[lab,anchor=north west,text width=5.0cm,align=left] at (0,-0.02) {\textbf{Nine fishers reading for themselves.} They err in different directions; most still land on the fish.};
+  \end{scope}
+  \begin{scope}[xshift=5.95cm]
+    \grounds
+    \foreach \x/\y in {2.92/1.33,3.22/1.33,3.52/1.33,2.92/1.0,3.22/1.0,3.52/1.0,2.92/0.67,3.22/0.67,3.52/0.67}{\boat{\x}{\y}}
+    \node[lab,anchor=north west,text width=5.0cm,align=left] at (0,-0.02) {\textbf{Nine behind one master, on a day he is wrong.} The whole fleet sails to one empty sea.};
+  \end{scope}
+\end{tikzpicture}%
